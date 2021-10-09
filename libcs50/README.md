@@ -24,6 +24,6 @@ To clean up, run `make clean`.
  * [`file`](file.md) - functions to read files (includes readlinep)
  * `hashtable` - the **hashtable** data structure from Lab 3
  * `jhash` - the Jenkins Hash function used by hashtable
- * `memory` - handy wrappers for malloc/free
+ * [`memory`](memory.md) - handy wrappers for malloc/free
  * `set` - the **set** data structure from Lab 3
- * `webpage` - functions to load and scan web pages
+ * [`webpage`](webpage.md) - functions to load and scan web pages
