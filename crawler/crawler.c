@@ -1,5 +1,5 @@
 /* 
- * crawler.c - CS50
+ * crawler.c - CS50 'crawler' module
  *
  * see README.md for more information.
  *
@@ -7,7 +7,7 @@
  *
  */
 
-
+/***************************************** INCLUDE FILES/LIBRARIES ****************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,7 +17,7 @@
 #include "webpage.h"
 
 
-/****************************************FUNCTION PROTOTYPES*************8**************************/
+/****************************************FUNCTION PROTOTYPES****************************************/
 void crawler();
 void item_delete();
 
@@ -25,7 +25,7 @@ void item_delete();
 * 
  * User inputs arguments which are checked for validity.
  * Method does not assume the User inputs the arguments correctly all the time
- * so eacg arg[n] is checked for validation before parsing them to other methods
+ * so each arg[n] is checked for validation before parsing them to other methods
 */
  
 int main(int argc, char *argv[]) 
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
    
    // Next, determine whether the pathname provided as pageDirectory is indeed a directory
     char *page_dir = argv[2]; // get path fron coomandline here
-    char filename[300]; // create a file to test for existence or writeability
+    char filename[500]; // create a file to test for existence or writeability
     sprintf (filename, "%s/.crawler", page_dir); // create path
     FILE *fp = fopen(filename, "w"); // open created test file
     if (fp == NULL) { 
@@ -90,20 +90,20 @@ int main(int argc, char *argv[])
     //Next try `newing` all needed structures ready for parsing to  crawler: new webpage, new bag, new hashtable
     webpage_t *seedpage = webpage_new(seed_URL, 0, NULL); // make a webpage for the seedURL, marked with depth = 0
     if (seedpage == NULL) {
-        fprintf (stderr, "could not allocate memory for webpage_t\n");
+        fprintf (stderr, "Could not allocate memory for webpage_t\n");
         return 1;
     }
 
     bag_t *tocrawl = bag_new(); // create bag to hold webpages to be crawled
     if (tocrawl == NULL) {
-        fprintf (stderr, "bag_new failed\n");
+        fprintf (stderr, "Bag_new failed\n");
         return 1;
     }
     bag_insert(tocrawl, seedpage); // add page for seedURL to the bag of webpages to crawl
 
     hashtable_t *seen = hashtable_new(NUMSLOTS); // create hashtable to hold seen URLs
     if (seen == NULL) {
-        fprintf (stderr, "hashtable_new failed\n");
+        fprintf (stderr, "Hashtable_new failed\n");
         return 1;
     }
     hashtable_insert(seen, webpage_getURL(seedpage), " "); // add seedURL to the hashtable of seen URLs
@@ -131,7 +131,7 @@ void crawler(hashtable_t *ht, bag_t *bag, char* dir, int depth) {
         if (pagefetcher(page)) { // retrieve a webpage for page URL. Pauses for 1-second after every fetch attempt
             // save the webpage to the pageDirectory with a unique document ID         
             pagesaver(dir,document_ID, page);
-            printf ("%d     Exploring:     %s\n", webpage_getDepth(page), webpage_getURL(page)); // explore progress indicator
+            printf ("%d  Exploring:     %s\n", webpage_getDepth(page), webpage_getURL(page)); // explore progress indicator
             document_ID++;
         }
         // if the webpage depth is < maxDepth, scan the webpage to for more URLs
