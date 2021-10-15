@@ -20,18 +20,25 @@ LLIBS = $P/libcs50.a ../common/common.a
 CFLAGS = -Wall -pedantic -std=c11 -ggdb $(TESTING) -I$P -I../common
 CC = gcc
 MAKE = make
+# for memory-leak tests
+VALGRIND = valgrind --leak-check=full --show-leak-kinds=all
 
 $(PROG): $(OBJS) $(LLIBS)
 	$(CC) $(CFLAGS) $^ $(LIBS) -o $@ 
 
 
-.PHONY: test clean
+.PHONY: test valgring clean
 
 test:
 	bash testing.sh
+
+valgrind: testing.sh
+	$(VALGRIND) bash testing.sh
+	
 clean:
 	rm -f *~ *.o *.dSYM
 	rm -f $(PROG)
 	rm -f core
+#rm -R *depth*
 
 

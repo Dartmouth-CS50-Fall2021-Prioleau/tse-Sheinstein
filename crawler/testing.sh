@@ -40,6 +40,7 @@ mkdir letters-depth-5
 
 mkdir toscrape-depth-0
 mkdir toscrape-depth-1
+mkdir dartmouth-depth-2
 
 mkdir wikipedia-depth-0
 mkdir wikipedia-depth-1
@@ -132,7 +133,7 @@ echo " "
 ## Crawling a simple closed set of cross-linked web pages;should not produce duplicate  or missing files.
 
 # at depth 0
-./crawler http://cs50tse.cs.dartmouth.edu/tse/letters/ letters-depth-0 0
+./crawler http://cs50tse.cs.dartmouth.edu/tse/letters/index.html letters-depth-0 0
 if [ $? -eq 0 ]
 then
     if [ -f ./letters-depth-0/1 ] 
@@ -149,7 +150,7 @@ else
 fi
 
 # at depth 1
-./crawler http://cs50tse.cs.dartmouth.edu/tse/letters/ letters-depth-1 1
+./crawler http://cs50tse.cs.dartmouth.edu/tse/letters/index.html letters-depth-1 1
 if [ $? -eq 0 ]
 then
     if [ -f ./letters-depth-1/2 ]
@@ -166,10 +167,10 @@ else
 fi
 
 # at depth 2
-./crawler http://cs50tse.cs.dartmouth.edu/tse/letters/ letters-depth-2 2
+./crawler http://cs50tse.cs.dartmouth.edu/tse/letters/index.html letters-depth-2 2
 if [ $? -eq 0 ]
 then
-    if [ -f ./letters-depth-2/4 ]
+    if [ -f ./letters-depth-2/3 ]
     then
         echo "Passed test at depth = 2"
         echo " "
@@ -183,10 +184,10 @@ else
 fi
 
 # at depth 3
-./crawler http://cs50tse.cs.dartmouth.edu/tse/letters/ letters-depth-3 3
+./crawler http://cs50tse.cs.dartmouth.edu/tse/letters/index.html letters-depth-3 3
 if [ $? -eq 0 ]
 then
-    if [ -f ./letters-depth-3/7 ]
+    if [ -f ./letters-depth-3/6 ]
     then
         echo "Passed test at depth = 3"
         echo " "
@@ -201,10 +202,10 @@ fi
 
 # at depth 4
 
-./crawler http://cs50tse.cs.dartmouth.edu/tse/letters/ ./letters-depth-4/ 4 
+./crawler http://cs50tse.cs.dartmouth.edu/tse/letters/index.html ./letters-depth-4/ 4 
 if [ $? -eq 0 ]
 then
-    if [ -f ./letters-depth-4/9 ]
+    if [ -f ./letters-depth-4/8 ]
     then
         echo "Passed test at depth = 4"
         echo " "
@@ -218,10 +219,10 @@ else
 fi
 
 # at depth 5
-./crawler http://cs50tse.cs.dartmouth.edu/tse/letters/ ./letters-depth-5/ 5
+./crawler http://cs50tse.cs.dartmouth.edu/tse/letters/index.html ./letters-depth-5/ 5
 if [ $? -eq 0 ]
 then
-    if [ -f ./letters-depth-5/10 ]
+    if [ -f ./letters-depth-5/9 ]
     then
         echo "Passed test at depth = 5"
         echo " "
@@ -236,7 +237,7 @@ fi
 
 
 ## Repeating previous tests with a different seed page in the same site
-./crawler http://cs50tse.cs.dartmouth.edu/tse/toscrape/ ./toscrape-depth-0/ 0
+./crawler http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html ./toscrape-depth-0/ 0
 if [ $? -eq 0 ]
 then
 	if [ -f ./toscrape-depth-0/1 ]
@@ -253,10 +254,26 @@ else
 fi
 
 # at depth 1
-./crawler http://cs50tse.cs.dartmouth.edu/tse/toscrape/ ./toscrape-depth-1/ 1
+./crawler http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html ./toscrape-depth-1/ 1
 if [ $? -eq 0 ]
 then
-	if  [ -f ./toscrape-depth-1/74 ]
+	if  [ -f ./toscrape-depth-1/73 ]
+	then
+		echo "Passed test w/ closed set of cross-linked pages, different seed page"
+        echo " "
+	else
+		echo "Failed test w/ closed set of cross-linked pages, different seed page"
+        echo " "
+	fi
+else
+    echo "Failed test w/ closed set of cross-linked pages, different seed page"
+    echo " "
+fi
+# at depth 1
+./crawler http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html ./toscrape-depth-1/ 1
+if [ $? -eq 0 ]
+then
+	if  [ -f ./toscrape-depth-1/73 ]
 	then
 		echo "Passed test w/ closed set of cross-linked pages, different seed page"
         echo " "
@@ -269,23 +286,22 @@ else
     echo " "
 fi
 
-# # at depth 2
-# mkdir toscrape-depth-2
-# ./crawler http://cs50tse.cs.dartmouth.edu/tse/toscrape/ toscrape-depth-2 2
-# if [ $? -eq 0 ]
-# then
-# 	if  [ -f toscrape-depth-2/999]#[[ $(ls ./toscrape-depth-2/* | wc -l) -eq  999]]]
-# 	then
-# 		echo "Passed test w/ closed set of cross-linked pages, different seed page"
-#         echo " "
-# 	else
-# 		echo "Failed test w/ closed set of cross-linked pages, different seed page"
-#         echo " "
-# 	fi
-# else
-#     echo "Failed test w/ closed set of cross-linked pages, different seed page"
-#     echo " "
-# fi
+#  at depth 2 with cross linked cycles
+./crawler http://cs50tse.cs.dartmouth.edu/index.html dartmouth-depth-2 2
+if [ $? -eq 0 ]
+then
+ 	if  [ -f dartmouth-depth-2/4]
+ 	then
+ 		echo "Passed test w/ closed set of cross-linked pages, different seed page"
+        echo " "
+ 	else
+ 		echo "Failed test w/ closed set of cross-linked pages, different seed page"
+        echo " "
+ 	fi
+else
+    echo "Failed test w/ closed set of cross-linked pages, different seed page"
+    echo " "
+ fi
 
 
 
@@ -293,7 +309,7 @@ fi
 
 
 # at depth 0
-./crawler http://cs50tse.cs.dartmouth.edu/tse/wikipedia/ ./wikipedia-depth-0/ 0
+./crawler http://cs50tse.cs.dartmouth.edu/tse/wikipedia/index.html ./wikipedia-depth-0/ 0
 if [ $? -eq 0 ]
 then
     if [ -f ./wikipedia-depth-0/1 ]
@@ -310,7 +326,7 @@ else
 fi
 
 # at depth 1
-./crawler http://cs50tse.cs.dartmouth.edu/tse/wikipedia/ ./wikipedia-depth-1/ 1
+./crawler http://cs50tse.cs.dartmouth.edu/tse/wikipedia/index.html ./wikipedia-depth-1/ 1
 if [ $? -eq 0 ]
 then
     if [ -f ./wikipedia-depth-1/7 ]
@@ -328,7 +344,7 @@ fi
 
 # # at depth 2
 # mkdir wikipedia-depth-2
-# ./crawler http://cs50tse.cs.dartmouth.edu/tse/wikipedia/ ./wikipedia-depth-2/ 2
+# ./crawler http://cs50tse.cs.dartmouth.edu/tse/wikipedia/index.html ./wikipedia-depth-2/ 2
 # if [ $? -eq 0 ]
 # then
 #     if [ -f wikipedia-depth-2/999]#[[ $(ls ./wikipedia-depth-2/* | wc -l) -eq  999]]]
