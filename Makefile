@@ -17,8 +17,8 @@ all:
 ############## valgrind all programs ##########
 valgrind: all
 	$(MAKE) -C crawler valgrind
-#$(MAKE) -C indexer valgrind
-#$(MAKE) -C querier valgrind
+#	#$(MAKE) -C indexer valgrind
+#	#$(MAKE) -C querier valgrind
 
 ############### TAGS for emacs users ##########
 TAGS:  Makefile */Makefile */*.c */*.h */*.md */*.sh
@@ -28,8 +28,9 @@ TAGS:  Makefile */Makefile */*.c */*.h */*.md */*.sh
 clean:
 	rm -f *~
 	rm -f TAGS
+	rm -rf  *tse-output* 
 	$(MAKE) -C libcs50 clean
 	$(MAKE) -C common clean
 	$(MAKE) -C crawler clean
-#$(MAKE) -C indexer clean
-#$(MAKE) -C querier clean
+#	#$(MAKE) -C indexer clean
+#	#$(MAKE) -C querier clean
