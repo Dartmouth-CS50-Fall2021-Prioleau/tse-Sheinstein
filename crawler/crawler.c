@@ -11,14 +11,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "bag.h"
-#include "hashtable.h"
-#include "pagedir.h"
-#include "webpage.h"
+#include "../libcs50/bag.h"
+#include "../libcs50/memory.h"
+#include "../libcs50/hashtable.h"
+#include "../common/pagedir.h"
+#include "../libcs50/webpage.h"
 
 
 /****************************************FUNCTION PROTOTYPES****************************************/
-void crawler();
+void crawler(hashtable_t *ht, bag_t *bag, char* dir, int depth);
 void item_delete();
 
 /***********************************************MAIN*************************************************
@@ -54,66 +55,75 @@ int main(int argc, char *argv[])
 
     if (max_depth > 15) max_depth = 15; // fix upper limit for acceptable maxdepth 
    
-   // Next, determine whether the pathname provided as pageDirectory is indeed a directory
-    char *page_dir = argv[2]; // get path fron coomandline here
-    char filename[500]; // create a file to test for existence or writeability
-    sprintf (filename, "%s/.crawler", page_dir); // create path
-    FILE *fp = fopen(filename, "w"); // open created test file
-    if (fp == NULL) { 
-        fprintf (stderr, "Directory does not exist or is not writable\n");
-        return 1;
-    }
-    fclose(fp); // close test file if directory passed the validation
 
    // Next, Since I now have valid inputs. I check if arguments are 
    // something my program can can work with. `Mallocable`? NormalizedURL? Internal?
-    char *seed_URL = (char *)malloc((strlen(argv[1]) + 1)*sizeof(char)); // allocate memory for seed URL
-    if (seed_URL == NULL) {
-        fprintf (stderr, "Could not allocate memory for seed_URL %s \n", argv[1]);
-        return 1;
-    }
-    seed_URL = (char *)strcpy(seed_URL, argv[1]); // copy seed URL from parsed seed_URL at argv[1] if memory was allocated
-    if(NormalizeURL(seed_URL))
-    {
-        if (!IsInternalURL(seed_URL)) 
-        { 
-            fprintf (stderr, "URL is not internal\n");
-            free(seed_URL);
-            return 1;
-            }
-    }else{
-        fprintf (stderr, "URL is not normalized\n");
-        free(seed_URL);
-        return 1;
-    }
+    //char *seed_URL = (char *)malloc((strlen(argv[1]) + 1)*sizeof(char)); // allocate memory for seed URL
+    //if (seed_URL == NULL) {
+        //fprintf (stderr, "Could not allocate memory for seed_URL %s \n", argv[1]);
+        //free(seed_URL);
+        //return 1;
+    //}
 
-    //Next try `newing` all needed structures ready for parsing to  crawler: new webpage, new bag, new hashtable
-    webpage_t *seedpage = webpage_new(seed_URL, 0, NULL); // make a webpage for the seedURL, marked with depth = 0
+    char* seedURL = argv[1];
+    if (!NormalizeURL(seedURL)) {
+        fprintf(stderr, "Error normalizing seedURL %s\n", seedURL);
+        return 1;
+    }
+    
+     if (!IsInternalURL(seedURL)) { 
+        fprintf (stderr, "URL is not internal\n");
+        return 1;
+        }
+
+    char* seedURLcopy = assertp(malloc(strlen(seedURL)+1), "url copy");    
+    strcpy(seedURLcopy, seedURL);
+    
+
+     // Next, determine whether the pathname provided as pageDirectory is indeed a directory                                                                    
+     char *page_dir = argv[2]; // get path fron coomandline here                                                                                               
+     char filename[strlen(page_dir)+ 10];// allocate an array of size 500 for filetest on stack                                                                                 
+     //char* file = filename;                                                                                                                                  
+     sprintf (filename, "%s/.crawler", page_dir); // create path                                                                                               
+     FILE *fp = fopen(filename, "w"); // open created test file                                                                                                
+     if (fp == NULL) {
+         fprintf (stderr, "Directory does not exist or is not writable\n");
+         free(seedURLcopy);
+         return 1;
+     }
+    fclose(fp); // close test file if directory passed the validation                                                                                          
+
+    //Next try `newing` all needed structures ready for parsing to  crawler: new webpage, new bag, new hashtable                                               
+    webpage_t *seedpage = webpage_new(seedURLcopy, 0, NULL); // make a webpage for the seedURL, marked with depth = 0                                          
     if (seedpage == NULL) {
+        webpage_delete(seedpage);
+    
         fprintf (stderr, "Could not allocate memory for webpage_t\n");
         return 1;
     }
 
-    bag_t *tocrawl = bag_new(); // create bag to hold webpages to be crawled
+    bag_t *tocrawl = bag_new(); // create bag to hold webpages to be crawled                                                                                   
     if (tocrawl == NULL) {
+        webpage_delete(seedpage);
         fprintf (stderr, "Bag_new failed\n");
         return 1;
     }
-    bag_insert(tocrawl, seedpage); // add page for seedURL to the bag of webpages to crawl
+    bag_insert(tocrawl, seedpage); // add page for seedURL to the bag of webpages to crawl                                                                     
 
-    hashtable_t *seen = hashtable_new(NUMSLOTS); // create hashtable to hold seen URLs
+    hashtable_t *seen = hashtable_new(NUMSLOTS); // create hashtable to hold seen URLs                                                                         
     if (seen == NULL) {
+        bag_delete(tocrawl, *webpage_delete);
         fprintf (stderr, "Hashtable_new failed\n");
         return 1;
     }
-    hashtable_insert(seen, webpage_getURL(seedpage), " "); // add seedURL to the hashtable of seen URLs
+    hashtable_insert(seen, webpage_getURL(seedpage), ""); // add seedURL to the hashtable of seen URLs                                                         
 
-    crawler(seen, tocrawl, page_dir, max_depth); // crawl webpages
+    crawler(seen, tocrawl, page_dir, max_depth); // crawl webpages                                                                                             
 
-    bag_delete(tocrawl, *webpage_delete); // clean up
-    hashtable_delete(seen, *item_delete);
+    bag_delete(tocrawl, webpage_delete); // clean up                                                                                                          
+    hashtable_delete(seen, NULL);
 
-    return 0; // success
+    return 0;
 }
 
  /******************************************FUNCTIONS IMPLEMENTATED ********************************************

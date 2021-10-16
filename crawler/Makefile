@@ -6,39 +6,35 @@
 # David Kotz, April 2016, 2017
 # updated by Xia Zhou, July 2016, 2018, January 2019
 # updated by Temi Prioleau, January 2020
-
-P = ../libcs50
+# Makefile for 'crawler' module
+#
+# Irene Lam, July 27, 2020
+# CS50, Summer 2020
 
 PROG = crawler
-OBJS = crawler.o ../common/pagedir.o
-LIBS =
-LLIBS = $P/libcs50.a ../common/common.a
+OBJS = crawler.o 
+# LIBS = ../libcs50/memory.o ../libcs50/bag.o ../libcs50/hashtable.o ../libcs50/webpage.o ../libcs50/set.o ../libcs50/jhash.o ../libcs50/file.o
+LIBS = ../libcs50/libcs50.a ../common/common.a
 
 # uncomment the following to turn on verbose memory logging
-# TESTING=-DMEMTEST
+#TESTING=-DMEMTEST
 
-CFLAGS = -Wall -pedantic -std=c11 -ggdb $(TESTING) -I$P -I../common
+CFLAGS = -Wall -pedantic -std=c11 -ggdb $(TESTING) -I../common -I../libcs50
 CC = gcc
 MAKE = make
-# for memory-leak tests
-VALGRIND = valgrind --leak-check=full --show-leak-kinds=all
+$(PROG): $(OBJS)
+	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
 
-$(PROG): $(OBJS) $(LLIBS)
-	$(CC) $(CFLAGS) $^ $(LIBS) -o $@ 
-
-
-.PHONY: test valgring clean
+.PHONY: test valgrind clean
 
 test:
-	bash testing.sh
 
-valgrind: testing.sh
-	$(VALGRIND) bash testing.sh
-	
+	bash testing.sh &> testing.out
+
+valgrind: $(PROG) 
+# 	valgrind ./$(PROG) 
+
 clean:
-	rm -f *~ *.o *.dSYM
+	rm -rf *.dSYM  # MacOS debugger info
+	rm -f *~ *.o
 	rm -f $(PROG)
-	rm -f core
-#rm -R *depth*
-
-

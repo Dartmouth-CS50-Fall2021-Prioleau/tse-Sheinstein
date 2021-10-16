@@ -11,9 +11,9 @@
 
 #include <stdio.h>
 #include <stdbool.h>
-#include "bag.h"
-#include "hashtable.h"
-#include "webpage.h"
+#include "../libcs50/bag.h"
+#include "../libcs50/hashtable.h"
+#include "../libcs50/webpage.h"
 
 /************************ pagefetcher *******************************/
 /* Fetches a page from a URL.

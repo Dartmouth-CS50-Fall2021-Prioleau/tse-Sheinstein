@@ -10,10 +10,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include "bag.h"
-#include "hashtable.h"
-#include "pagedir.h"
-#include "webpage.h"
+#include "../libcs50/bag.h"
+#include "../libcs50/hashtable.h"
+#include "./pagedir.h"
+#include "../libcs50/webpage.h"
+
 
 /**************** helper functions from `pagedir.h implemented here ****************/
 

@@ -23,7 +23,7 @@ $(LIB): $(OBJS)
 	ar cr $(LIB) $(OBJS)
 
 # Dependencies: object files depend on header files
-pagedir.o: pagedir.h $P/webpage.h
+pagedirr.o: pagedir.h $P/webpage.h
 
 .PHONY: clean
 

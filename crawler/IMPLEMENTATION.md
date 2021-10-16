@@ -64,6 +64,6 @@ My implementation choice has the following limitations and assumptions:
 
 1. Upper limit of allowable depth was set at 15. If the user enters a value over 15, max_depth is set to 15.
 2. The hashtable is newed with a size = 1000. Essentially, my implementation assumes , or at least hopes we will not have more than a thousand seen webpages per seedURL. I believe it is a reasonable choice.
-3. In order to check if the input directory name from commandline is exists or is writeable, I create a character pointer of cap size 500. This is with the assumption that the user does not write a directory name longer than 500. This too is reasonable deliberate choice.
+3. In order to check if the input directory name from commandline is exists or is writeable, I create a character pointer of cap size input directorty name + 10 ie the length of `/.crawler`. This is with the assumption that the user does not write a directory name longer than 500. This too is reasonable deliberate choice.
 
 
