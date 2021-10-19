@@ -28,9 +28,10 @@ test:
 	bash testing.sh &> testing.out
 
 valgrind: $(PROG) 
-# 	valgrind ./$(PROG) 
+	valgrind ./$(PROG) 
 
 clean:
 	rm -rf *.dSYM  # MacOS debugger info
 	rm -f *~ *.o
 	rm -f $(PROG)
+
