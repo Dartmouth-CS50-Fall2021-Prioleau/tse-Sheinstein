@@ -1,10 +1,2 @@
 # Do NOT add object files
 *.o
-bag
-hashtable
-set
-counters
-webpage
-memory
-tse-output
-.vscode

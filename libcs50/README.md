@@ -27,4 +27,3 @@ To clean up, run `make clean`.
  * [`memory`](memory.md) - handy wrappers for malloc/free
  * `set` - the **set** data structure from Lab 3
  * [`webpage`](webpage.md) - functions to load and scan web pages
-
