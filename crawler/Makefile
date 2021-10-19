@@ -10,7 +10,7 @@
 
 PROG = crawler
 OBJS = crawler.o 
-LIBS = ../libcs50/libcs50.a ../common/common.a
+LIBS = ../libcs50/libcs50-given.a ../common/common.a
 
 # uncomment the following to turn on verbose memory logging
 #TESTING=-DMEMTEST
