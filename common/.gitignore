@@ -1,8 +1,5 @@
 # Do NOT add object files
 *.o
 commom
-pagedirr.c
 pagedir
-pagedirr
-common
 
