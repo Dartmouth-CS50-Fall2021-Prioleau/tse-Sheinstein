@@ -32,8 +32,11 @@ indexer: indexer.o $(OBJS) $(LLIBS)
 indextest: indextest.o $(OBJS) $(LLIBS)
 	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
 
-.PHONY: test clean
+.PHONY: valgrind test clean
 
+valgrind: all 
+	valgrind ./indexer
+	valgrind ./indextest
 clean:
 	rm -f *~ *.o *.dSYM
 	rm -f indexer indextest
