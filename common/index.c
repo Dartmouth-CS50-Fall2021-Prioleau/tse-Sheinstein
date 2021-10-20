@@ -11,26 +11,34 @@
 #include <string.h>
 #include "index.h"
 #include "word.h"
+#include "../libcs50/memory.h"
 #include "../libcs50/file.h"
 #include "../libcs50/webpage.h"
 #include "../libcs50/hashtable.h"
 #include "../libcs50/counters.h"
 
 
+/*********************** file-local global variables ****************/
+/* none */
 
-/**************** local functions ****************/
+/************************* global functions *************************/
+/* that is, visible outside this file */
+/* see index.h for comments about exported functions */
+
+
+/********************* local functions ***********************/
 /* not visible outside this file */
-static void get_keypairs(void *arg, const char *key, void *item);
-static void print_keypairs(void *arg, const int key, const int count);
+static void get_key_item_pairs(void *arg, const char *key, void *item);
+static void print_key_item_pairs(void *arg, const int key, const int count);
 
-/**************** functions ****************/
-
-/**************** index_build ****************/
-hashtable_t* index_build(hashtable_t *ht, char *dir) {
+/**************** index_build() ****************/
+/* see index.h for description */
+hashtable_t*
+index_build(hashtable_t *ht, char *dir) {
 
     int dirlen = strlen(dir);
     int docID = 1; // first file    
-    char ifile[dirlen + 30]; // assume docID will be no more than 29 digits...
+    char ifile[dirlen + 50]; // assume docID will be no more than 29 digits...
     sprintf(ifile, "%s/%d", dir, docID); // create path
     FILE *fp = fopen(ifile, "r");
 
@@ -84,52 +92,34 @@ hashtable_t* index_build(hashtable_t *ht, char *dir) {
         fp = fopen(ifile, "r"); // open next document in the directory
     }
     
-    return(ht);    
+    #ifdef MEMTEST
+         count_report(stdout, "After index_build");
+    #endif 
+
+    return(ht);  
 }
 
-/**************** index_save ****************/
-void index_save(hashtable_t *ht, char *filename)
+/**************************** index_save() *************************/
+/* see index.h for description */
+void
+index_save(hashtable_t *ht, char *filename)
 {
     FILE *fp = fopen(filename, "w"); // open indexfile, provided by user
     if (fp != NULL) {
-        hashtable_iterate(ht, (void*)fp, get_keypairs); // go through the hashtable
+        hashtable_iterate(ht, (void*)fp, get_key_item_pairs); // go through the hashtable
         fclose(fp);
     }
     else fprintf(stderr, "error opening newIndexFilename\n");
+
+    #ifdef MEMTEST
+         count_report(stdout, "After index_save");
+    #endif
 }
 
-/**************** get_keypairs ****************/
-/* Prints a key (a word) from the index hashtable to 
- * indexfile (which may or may not exist – if the file
- * already exists, its contents will be overwritten),
- * and iterates over the counterset which corresponds 
- * to that key.
- * The 'static' modifier means this function is not visible
- * outside this file 
- */
-static void get_keypairs(void *arg, const char *key, void *item) 
-{   
-    fprintf((FILE*)arg, "%s", key); // print word to file
-    counters_iterate(item, arg, print_keypairs); // iterate over counterset
-    fprintf((FILE*)arg, "\n"); // print newline for next word
-}
-
-/**************** print_keypairs ****************/
-/* Prints [docID count] pairs from a counterset
- * to indexfile (which may or may not exist – if the file
- * already exists, its contents will be overwritten),
- * and iterates over the counterset which corresponds 
- * to that key.
- * The 'static' modifier means this function is not visible
- * outside this file 
- */
-static void print_keypairs(void *arg, const int key, const int count)
-{
-    fprintf((FILE*)arg, " %d %d", key, count); // print [docID count] pairs to file
-}
-
-/**************** index_load ****************/
-hashtable_t* index_load(hashtable_t *ht, FILE *fp)
+/**************** index_load() ****************/
+/* see index.h for description */
+hashtable_t*
+index_load(hashtable_t *ht, FILE *fp)
 {
     int docID, count;
     char *word;
@@ -144,5 +134,44 @@ hashtable_t* index_load(hashtable_t *ht, FILE *fp)
         }
         else fprintf(stderr, "counters_new failed\n"); 
     }
+    #ifdef MEMTEST
+         count_report(stdout, "After index_load");
+    #endif
     return ht;
 }
+
+/************************** module local function descriptions and implementations ***************************/
+
+/**************** get_key_item_pairs() ****************/
+/* Prints a key (a word) from the index hashtable to 
+ * indexfile (which may or may not exist – if the file
+ * already exists, its contents will be overwritten),
+ * and iterates over the counterset which corresponds 
+ * to that key.
+ * The 'static' modifier means this function is not visible
+ * outside this file 
+ */
+static void
+get_key_item_pairs(void *arg, const char *key, void *item) 
+{   
+    fprintf((FILE*)arg, "%s", key); // print word to file
+    counters_iterate(item, arg, print_key_item_pairs); // iterate over counterset
+    fprintf((FILE*)arg, "\n"); // print newline for next word
+}
+
+/********************* print_key_item_pairs **************************/
+/* Prints [docID count] pairs from a counterset
+ * to indexfile (which may or may not exist – if the file
+ * already exists, its contents will be overwritten),
+ * and iterates over the counterset which corresponds 
+ * to that key.
+ * The 'static' modifier means this function is not visible
+ * outside this file 
+ */
+static void
+print_key_item_pairs(void *arg, const int key, const int count)
+{
+    fprintf((FILE*)arg, " %d %d", key, count); // print [docID count] pairs to file
+}
+
+

@@ -7,7 +7,7 @@
  * 
  * see IMPLEMENTATION and DESIGN spec for more information.
  *
- *Salifyanji J Namwila October 19, 2021.
+ * Salifyanji J Namwila October 19, 2021.
  */
 
 #include <stdio.h>
@@ -19,10 +19,13 @@
 #include "../libcs50/hashtable.h"
 #include "../libcs50/counters.h"
 
-//function prototypes
-void item_delete();
+/********************** function prototypes *************************************/
+void
+item_delete();
 
-int main(int argc, char* argv[]) {
+/************************** main ************************************************/
+int
+main(int argc, char* argv[]) {
 
     // validate parameters
     if (argc != 3) {
@@ -60,14 +63,17 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-/**************** item_delete ****************/
-/* Frees item memory in hashtable, in this case,
- * a counterset.
+/******************* local helper functions ************************************/
+
+/*********************** item_delete *************************/
+/* Frees items in hashtable one at times. Item ==counterset.
  */
-void item_delete(void *item)
+void
+item_delete(void *item)
 {
     if (item != NULL) {
         counters_delete(item); // delete the counterset
         item = NULL;
     }
 }
+

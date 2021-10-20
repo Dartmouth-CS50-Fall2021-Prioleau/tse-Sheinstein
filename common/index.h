@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include "../libcs50/hashtable.h"
 
-/**************** index_build ****************/
+/******************************* index_build() **********************************/
 /* Builds an inverted-index data structure mapping from words to (docID, count)
  * pairs, wherein each count represents the number of occurrences of the given
  * word in the given document. The function receives an empty index hashtable
@@ -26,9 +26,10 @@
  * fewer than three characters are ignored and are "normalized" before they
  * are indexed. Here, "normalized" means all letters are converted to lower-case. 
  */ 
-hashtable_t* index_build(hashtable_t *ht, char *dir);
+hashtable_t*
+index_build(hashtable_t *ht, char *dir);
 
-/**************** index_save ****************/
+/******************************* index_save() ************************************/
 /* Creates a file using the user provided indexFilename 
  * and writes the index to that file in the following format:
  * 
@@ -43,15 +44,17 @@ hashtable_t* index_build(hashtable_t *ht, char *dir);
  * Within the file, the lines may be in any order.
  * Within a line, the docIDs may be in any order. 
  */
-void index_save(hashtable_t *ht, char *filename);
+void
+index_save(hashtable_t *ht, char *filename);
 
-/**************** index_load ****************/
+/********************************* index_load() **********************************/
 /* Loads the index from the user provided oldIndexFilename
  * into an inverted-index data structure and saves that 
  * structure in newIndexFilename. The function receives
  * a hashtable_t type as a parameter then returns the 
  * populated hashtable.
  */ 
-hashtable_t* index_load(hashtable_t *ht, FILE *fp);
+hashtable_t*
+index_load(hashtable_t *ht, FILE *fp);
 
 #endif // __INDEX_H

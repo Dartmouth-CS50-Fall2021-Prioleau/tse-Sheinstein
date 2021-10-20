@@ -1,0 +1,11 @@
+# Do NOT add object files
+*.o
+counters
+set
+hashtable
+hash
+jhash
+memory
+webpage
+file
+bag

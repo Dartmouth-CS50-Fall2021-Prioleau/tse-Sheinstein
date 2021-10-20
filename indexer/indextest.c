@@ -19,10 +19,13 @@
 #include "../libcs50/counters.h"
 #include "../libcs50/webpage.h"
 
-//function prototypes
-void item_delete();
+/************************ function prototypes **************************/
+void
+item_delete();
 
-int main(int argc, char* argv[]) {
+/************************** main ***************************************/
+int
+main(int argc, char* argv[]) {
 
     // validate parameters
     if (argc != 3) {
@@ -59,14 +62,17 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
+/*************************** local helper functions ***************************/
+
 /**************** item_delete ****************/
-/* Frees item memory in hashtable, in this case,
- * a counterset.
+/* Frees item memory of items in hashtable ie. counterset.
  */
-void item_delete(void *item)
+void
+item_delete(void *item)
 {
     if (item != NULL) {
         counters_delete(item); // delete the counterset
         item = NULL;
     }
 }
+
