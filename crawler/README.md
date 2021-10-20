@@ -60,6 +60,3 @@ Details of test run in [TESTING](TESTING.md).
 
 Details of implementation choices in [IMPLEMENTATION](IMPLEMENTATION.md).
 
-### Memory Leaks
-Unlike other Labs,which gracefully from memory-allocation failures. In the TSE application programs, the instructors of Lab 4 allowed for a  bit more lazy: on NULL return from malloc/calloc prints an error and exit with non-zero exit status. As such, it is ok if valgrind reports your program as having leaks. 
-Of that whane valgrind is run on my test cases, it does report some blocks of memory lost.
