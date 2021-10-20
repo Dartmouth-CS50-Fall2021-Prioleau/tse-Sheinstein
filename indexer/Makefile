@@ -32,8 +32,10 @@ indexer: indexer.o $(OBJS) $(LLIBS)
 indextest: indextest.o $(OBJS) $(LLIBS)
 	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
 
-.PHONY: valgrind test clean
+.PHONY:  test valgrind clean
 
+test:
+	bash testing.sh
 valgrind: all 
 	valgrind ./indexer
 	valgrind ./indextest
@@ -42,5 +44,3 @@ clean:
 	rm -f indexer indextest
 	rm -f stocks
 	rm -f core
-test:
-	bash testing.sh

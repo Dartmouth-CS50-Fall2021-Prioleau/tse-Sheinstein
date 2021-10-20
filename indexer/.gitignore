@@ -2,5 +2,4 @@
 *.o
 *.dSYM
 indexer
-indexersort.awk.sh
 indextest

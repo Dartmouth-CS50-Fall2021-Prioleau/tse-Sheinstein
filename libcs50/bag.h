@@ -106,3 +106,4 @@ void bag_iterate(bag_t *bag, void *arg,
 void bag_delete(bag_t *bag, void (*itemdelete)(void *item) );
 
 #endif // __BAG_H
+

@@ -1,4 +1,4 @@
-#!/usr/local/bin/gawk -f
+#!/usr/bin/awk -f
 # Sort the document pairs on each line of a TSE index file,
 # and pipe output to `sort` so we sort the lines alphabetically.
 #
