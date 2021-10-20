@@ -25,7 +25,9 @@
  * Returns true if the input URL's page is successfully returned.
  * Returns false if page cannot be fetched or any error occurs in the process. 
  */
-bool pagefetcher(webpage_t *page);
+
+bool
+pagefetcher(webpage_t *page);
 
 
 /****************************** pagescanner ***************************/
@@ -42,7 +44,9 @@ bool pagefetcher(webpage_t *page);
  * we finall add the page to the bag to later explore and print progress report to user
  * if the page is not internal or normalised, we  print apprepriate massage to console and free the pointer we creted 
  */
-void pagescanner(webpage_t *page, hashtable_t *ht, bag_t *bag);
+
+void
+pagescanner(webpage_t *page, hashtable_t *ht, bag_t *bag);
 
 
 /***************************** pagesaver *******************************/
@@ -54,6 +58,20 @@ void pagescanner(webpage_t *page, hashtable_t *ht, bag_t *bag);
  * else we tell caller there was an error saving the URL
  * Assumes file path name is no longer than 500 characters. 
  */
-void pagesaver(char *directory,int document_ID, webpage_t *page);
+
+void
+pagesaver(char *directory,int document_ID, webpage_t *page);
+
+/************** is_crawler_directory **************/
+/*Input: User provides a directory name
+ * We Verify whether given directory is indeed a Crawler-produced directory
+ * We create the pathname, dir/.crawler,  and store it on the stack file and so do not need to free it.
+ * program tries to open the file for reading.
+ * If the file opens, then dir is a Crawler-produced directory and we return true to caller.
+ * Else we print aa stderr stating that we cannot verify the given directory is crawler produced.
+ * and return false.
+ */ 
+bool
+isCrawlerDirectory(char* directory);
 
 #endif // __PAGEDIR_H

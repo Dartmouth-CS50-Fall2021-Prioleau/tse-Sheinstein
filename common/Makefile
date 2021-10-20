@@ -7,14 +7,17 @@
 # Updated by Xia Zhou, July 2016
 # Updated by Temi Prioleau, January 2020
 
-P = ../libcs50
+L = ../libcs50
 
 PROG = 
-OBJS = pagedir.o $P/libcs50-given.a
+OBJS = pagedir.o word.o index.o
 LIB = common.a
-LLIBS = $P/libcs50
+LLIBS = $L/libcs50.a
 
-CFLAGS = -Wall -pedantic -std=c11 -ggdb -I$P
+# uncomment the following to turn on verbose memory logging
+#TESTING=-DMEMTEST
+
+CFLAGS = -Wall -pedantic -std=c11 -ggdb -I$L
 CC = gcc
 MAKE = make
 
@@ -23,10 +26,14 @@ $(LIB): $(OBJS)
 	ar cr $(LIB) $(OBJS)
 
 # Dependencies: object files depend on header files
-pagedirr.o: pagedir.h $P/webpage.h
+pagedir.o: pagedir.h $L/webpage.h
+word.o: word.h
+index.o: index.h $L/file.h $L/webpage.h
 
 .PHONY: clean
 
 clean:
 	rm -f core
 	rm -f $(LIB) *~ *.o
+
+	

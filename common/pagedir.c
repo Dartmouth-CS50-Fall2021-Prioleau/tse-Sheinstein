@@ -11,6 +11,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "../libcs50/bag.h"
+#include "../libcs50/memory.h"
 #include "../libcs50/hashtable.h"
 #include "./pagedir.h"
 #include "../libcs50/webpage.h"
@@ -20,7 +21,8 @@
 
 /**************************** pagefetcher ********************************/
 /************* refer to pagefetcher documentation in pagedir.h *************/
-bool pagefetcher(webpage_t *page)
+bool
+pagefetcher(webpage_t *page)
 {
     char *url = webpage_getURL(page); // get URL(also link to another page) from page
     if (!IsInternalURL(url)) { 
@@ -36,7 +38,8 @@ bool pagefetcher(webpage_t *page)
 
 /************************ pagescanner *********************************/
 /********* refer to pagescanner documentation in pagedir.h ************/
-void pagescanner(webpage_t *page, hashtable_t *ht, bag_t *bag)
+void
+pagescanner(webpage_t *page, hashtable_t *ht, bag_t *bag)
 {
     int pos = 0;
     char *result;
@@ -73,7 +76,8 @@ void pagescanner(webpage_t *page, hashtable_t *ht, bag_t *bag)
 
 /************************ pagesaver ***********************/
 /******* refer to page saver documentation in pagedir.h ******/
-void pagesaver(char *directory,int document_ID, webpage_t *page)
+void
+pagesaver(char *directory,int document_ID, webpage_t *page)
 {
     if (NormalizeURL(webpage_getURL(page)))
     {
@@ -92,4 +96,27 @@ void pagesaver(char *directory,int document_ID, webpage_t *page)
     }else fprintf(stderr, " Saver could not normalize page\n");
 }
 
+bool
+isCrawlerDirectory(char* directory)
+{
+    // return error message  for NULL directory
+    assertp(directory, "passed NULL directory to function is_crawler_directory " );
+
+    // get path name here and store on stack
+    char path[strlen(directory)+10]; // create string with enough space for directory and /.crawler
+    sprintf(path, "%s/%s", directory, "/.crawler"); // put the path in memory
+    FILE *fp = fopen(path, "r"); // try to open file for reading
+
+    if (fp != NULL) {
+
+        fclose(fp); // close if file open was successful
+        return true;
+    }
+    else {
+
+        fprintf(stderr, " Cannot verify whether directory Crawler\n");
+        return false;
+    }
+}
+    
 

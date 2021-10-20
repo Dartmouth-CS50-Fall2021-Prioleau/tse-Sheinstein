@@ -1,2 +1,5 @@
 # Do NOT add object files
 *.o
+.vscode
+tse-output
+tse-index-output
