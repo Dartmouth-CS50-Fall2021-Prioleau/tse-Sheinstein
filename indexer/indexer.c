@@ -17,12 +17,13 @@
 #include "../common/pagedir.h"
 #include "../common/word.h"
 #include "../libcs50/memory.h"
+#include "../common/index.h"
 #include "../libcs50/hashtable.h"
 #include "../libcs50/counters.h"
 
 /********************** function prototypes *************************************/
 void
-item_delete();
+item_delete(void *item);
 
 /************************** main ************************************************/
 int
@@ -42,15 +43,15 @@ main(int argc, char* argv[]) {
     fclose(fp);
 
     const int NUMSLOTS = 500; //arbitrary choice of size
-    hashtable_t* index = assertp(hashtable_new(NUMSLOTS),"hashtable_new failed\n");
+    index_t* index = assertp(index_new(NUMSLOTS),"index_new failed\n");
 
     printf("Building index...\n");
-    index = index_build(index, argv[1]); // build the index
+    index = index_build(index, argv[1]); // build  index the index
 
     printf("Saving index...\n");
     index_save(index, argv[2]); // save the index
 
-    hashtable_delete(index, item_delete); // clean up
+    index_delete(index, item_delete); // clean up
     printf("Index Built and Saved.\n");
 
     return 0;
@@ -59,7 +60,7 @@ main(int argc, char* argv[]) {
 /******************* local helper functions ************************************/
 
 /*********************** item_delete *************************/
-/* Frees items in hashtable one at times. Item ==counterset.
+/* Frees items in index one at times. Item ==counterset.
  */
 void
 item_delete(void *item)

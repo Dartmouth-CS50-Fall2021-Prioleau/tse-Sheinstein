@@ -23,7 +23,7 @@
 
 /************************ function prototypes **************************/
 void
-item_delete();
+item_delete(void *item);
 
 /************************** main ***************************************/
 int
@@ -40,9 +40,9 @@ main(int argc, char* argv[]) {
 
     // load the inverted index
     const int NUMSLOTS = 2*(lines_in_file(ofp)+1);
-    hashtable_t* index = hashtable_new(NUMSLOTS); // create empty hashtable
+    index_t* index = index_new(NUMSLOTS); // create empty index
     if (index == NULL) {
-        fprintf(stderr, "hashtable_new failed\n");
+        fprintf(stderr, "index_new failed\n");
         fclose(ofp);
         return 1;
     }
@@ -54,7 +54,7 @@ main(int argc, char* argv[]) {
     printf("Saving index...\n");
     index_save(index, argv[2]); // save the index structure
         
-    hashtable_delete(index, item_delete); // clean up
+    index_delete(index, item_delete); // clean up
     printf("Index Loaded and Saved in Indextest.\n");
     
     return 0;
@@ -63,7 +63,7 @@ main(int argc, char* argv[]) {
 /*************************** local helper functions ***************************/
 
 /**************** item_delete ****************/
-/* Frees item memory of items in hashtable ie. counterset.
+/* Frees item memory of items in index ie. counterset.
  */
 void
 item_delete(void *item)
