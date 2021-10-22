@@ -1,4 +1,4 @@
-/**
+ /**
  * index.h -- header file for CS50 'index' module
  * 
  * 'index' module contains methods that need to be shared by crawler, 
