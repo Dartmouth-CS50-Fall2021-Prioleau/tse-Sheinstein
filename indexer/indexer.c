@@ -16,6 +16,7 @@
 #include "../common/index.h"
 #include "../common/pagedir.h"
 #include "../common/word.h"
+#include "../libcs50/memory.h"
 #include "../libcs50/hashtable.h"
 #include "../libcs50/counters.h"
 
@@ -37,19 +38,11 @@ main(int argc, char* argv[]) {
     if (!isCrawlerDirectory(argv[1])) return 1; // check if error printed from pagedir
 
     // check if indexFilename is the pathname of a writeable file
-    FILE *fp = fopen(argv[2], "w"); // attempt to open file for writing
-    if (fp == NULL) {
-        fprintf (stderr, "indexFilename could not be opened for writing\n");
-        return 1;
-    }
-    else fclose(fp);
+    FILE *fp = assertp(fopen(argv[2], "w"),"indexFilename could not be opened for writing\n"); // attempt to open file for writing
+    fclose(fp);
 
-    const int NUMSLOTS = 500;
-    hashtable_t* index = hashtable_new(NUMSLOTS);
-    if (index == NULL) {
-        fprintf(stderr, "hashtable_new failed\n");
-        return 1;
-    }
+    const int NUMSLOTS = 500; //arbitrary choice of size
+    hashtable_t* index = assertp(hashtable_new(NUMSLOTS),"hashtable_new failed\n");
 
     printf("Building index...\n");
     index = index_build(index, argv[1]); // build the index
@@ -58,7 +51,7 @@ main(int argc, char* argv[]) {
     index_save(index, argv[2]); // save the index
 
     hashtable_delete(index, item_delete); // clean up
-    printf("Done.\n");
+    printf("Index Built and Saved.\n");
 
     return 0;
 }
@@ -73,7 +66,8 @@ item_delete(void *item)
 {
     if (item != NULL) {
         counters_delete(item); // delete the counterset
-        item = NULL;
+       // item = NULL;
     }
 }
+
 

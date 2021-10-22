@@ -1,5 +1,5 @@
 # Salifyanji J Namwila
-## CS50 Spring 2020, Lab 5-TSE `indexer`
+## CS50 Fall 2021, Lab 5-TSE `indexer`
 
 ### indexer
 

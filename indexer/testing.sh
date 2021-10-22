@@ -34,7 +34,7 @@ echo "(Please comment out for brevity, see Makefile in common to delete the flag
 echo "Note, using -qy tags for diff, meaning that only if there are differences will they be displayed"
 echo "Please use valgrind to check for memory leaks"
 
-echo "========================================================="
+echo "=================================================================="
 
 #************************************* various commandline arguments testing block ************************************#
 ### The tests cases defined in this block should  all fail ###
@@ -289,7 +289,8 @@ echo " Also comparing sorted files of indexer and indextest "
 
 # include indexsort.awk to sort the files and creat the directory to hold those files
 chmod +x indexsort.awk
-mkdir ../tse-sorted-index
+mkdir ../tse-index-sorted
+mkdir ../tse-sorted-indextest
 mkdir ../tse-indextest-output
 
 
@@ -309,10 +310,10 @@ fi
 
 # "Comparing differences between indextest sorted output and that of with indexer sorted "
 echo "Comparing differences between indextest sorted output and that of with indexer sorted "
-./indexsort.awk ../tse-index-output/letters-index-0 > ../tse-index-output/letters-index-0-sorted
-./indexsort.awk ../tse-indextest-output/letters-index-0 > ../tse-sorted-index/letters-index-0-sorted
+./indexsort.awk ../tse-index-output/letters-index-0 > ../tse-index-sorted/letters-index-0-sorted
+./indexsort.awk ../tse-indextest-output/letters-index-0 > ../tse-sorted-indextest/letters-index-0-sorted
 
-diff -qy ../tse-index-output/letters-index-0-sorted ../tse-sorted-index/letters-index-0-sorted
+diff -qy ../tse-index-sorted/letters-index-0-sorted ../tse-sorted-indextest/letters-index-0-sorted
 if [ $? -ne 0 ]; then
     echo >&2 "letters depth 0 indexer and indextest files are different "
     echo " "
@@ -332,10 +333,10 @@ fi
 
 # Comparing differences between indextest sorted output and that of with indexer sorted "
 echo "Comparing differences between indextest sorted output and that of with indexer sorted "
-./indexsort.awk ../tse-index-output/letters-index-1 > ../tse-index-output/letters-index-1-sorted
-./indexsort.awk ../tse-indextest-output/letters-index-1 > ../tse-sorted-index/letters-index-1-sorted
+./indexsort.awk ../tse-index-output/letters-index-1 > ../tse-index-sorted/letters-index-1-sorted
+./indexsort.awk ../tse-indextest-output/letters-index-1 > ../tse-sorted-indextest/letters-index-1-sorted
 
-diff -qy ../tse-index-output/letters-index-1-sorted ../tse-sorted-index/letters-index-1-sorted
+diff -qy ../tse-index-sorted/letters-index-1-sorted ../tse-sorted-indextest/letters-index-1-sorted
 if [ $? -ne 0 ]; then
     echo >&2 "letters depth 1 indexer and indextest files are different "
     echo " "
@@ -357,10 +358,10 @@ fi
 
 # Comparing differences between indextest sorted output and that of with indexer sorted "
 echo "Comparing differences between indextest sorted output and that of with indexer sorted "
-./indexsort.awk ../tse-index-output/letters-index-2 > ../tse-index-output/letters-index-2-sorted
-./indexsort.awk ../tse-indextest-output/letters-index-2 > ../tse-sorted-index/letters-index-2-sorted
+./indexsort.awk ../tse-index-output/letters-index-2 > ../tse-index-sorted/letters-index-2-sorted
+./indexsort.awk ../tse-indextest-output/letters-index-2 > ../tse-sorted-indextest/letters-index-2-sorted
 
-diff -qy ../tse-index-output/letters-index-2-sorted ../tse-sorted-index/letters-index-2-sorted
+diff -qy ../tse-index-sorted/letters-index-2-sorted ../tse-sorted-indextest/letters-index-2-sorted
 if [ $? -ne 0 ]; then
     echo >&2 "letters depth 2 indexer and indextest files are different "
     exit 1
@@ -380,10 +381,10 @@ fi
 
 # Comparing differences between indextest sorted output and that of with indexer sorted "
 echo "Comparing differences between indextest sorted output and that of with indexer sorted "
-./indexsort.awk ../tse-index-output/letters-index-3 > ../tse-index-output/letters-index-3-sorted
-./indexsort.awk ../tse-indextest-output/letters-index-3 > ../tse-sorted-index/letters-index-3-sorted
+./indexsort.awk ../tse-index-output/letters-index-3 > ../tse-index-sorted/letters-index-3-sorted
+./indexsort.awk ../tse-indextest-output/letters-index-3 > ../tse-sorted-indextest/letters-index-3-sorted
 
-diff -qy ../tse-index-output/letters-index-3-sorted ../tse-sorted-index/letters-index-3-sorted
+diff -qy ../tse-index-sorted/letters-index-3-sorted ../tse-sorted-indextest/letters-index-3-sorted
 if [ $? -ne 0 ]; then
     echo >&2 "letters depth 3 indexer and indextest files are different "
     echo " "
@@ -404,10 +405,10 @@ fi
 
 # Comparing differences between indextest sorted output and that of with indexer sorted "
 echo "Comparing differences between indextest sorted output and that of with indexer sorted "
-./indexsort.awk ../tse-index-output/letters-index-4 > ../tse-index-output/letters-index-4-sorted
-./indexsort.awk ../tse-indextest-output/letters-index-4 > ../tse-sorted-index/letters-index-4-sorted
+./indexsort.awk ../tse-index-output/letters-index-4 > ../tse-index-sorted/letters-index-4-sorted
+./indexsort.awk ../tse-indextest-output/letters-index-4 > ../tse-sorted-indextest/letters-index-4-sorted
 
-diff -qy ../tse-index-output/letters-index-4-sorted ../tse-sorted-index/letters-index-4-sorted
+diff -qy ../tse-index-sorted/letters-index-4-sorted ../tse-sorted-indextest/letters-index-4-sorted
 if [ $? -ne 0 ]; then
     echo >&2 "letters depth 4 indexer and indextest files are different "
      echo " "
@@ -450,11 +451,11 @@ fi
 # Comparing differences between indextest sorted output and that of with indexer sorted "
 echo "Comparing differences between indextest sorted output and that of with indexer sorted "
 # sort both files
-./indexsort.awk ../tse-index-output/wikipedia-index-0 > ../tse-index-output/wikipedia-index-0-sorted
-./indexsort.awk ../tse-indextest-output/wikipedia-index-0 > ../tse-sorted-index/wikipedia-index-0-sorted
+./indexsort.awk ../tse-index-output/wikipedia-index-0 > ../tse-index-sorted/wikipedia-index-0-sorted
+./indexsort.awk ../tse-indextest-output/wikipedia-index-0 > ../tse-sorted-indextest/wikipedia-index-0-sorted
 
 # compare
-diff -qy ../tse-index-output/wikipedia-index-0-sorted ../tse-sorted-index/wikipedia-index-0-sorted
+diff -qy ../tse-index-sorted/wikipedia-index-0-sorted ../tse-sorted-indextest/wikipedia-index-0-sorted
 if [ $? -ne 0 ]; then
     echo >&2 "wikipedia depth 0 indexer and indextest files are different "
     exit 1
@@ -474,11 +475,11 @@ fi
 # Comparing differences between indextest sorted output and that of with indexer sorted "
 echo "Comparing differences between indextest sorted output and that of with indexer sorted "
 # sort both files
-./indexsort.awk ../tse-index-output/wikipedia-index-1 > ../tse-index-output/wikipedia-index-1-sorted
-./indexsort.awk ../tse-indextest-output/wikipedia-index-1 > ../tse-sorted-index/wikipedia-index-1-sorted
+./indexsort.awk ../tse-index-output/wikipedia-index-1 > ../tse-index-sorted/wikipedia-index-1-sorted
+./indexsort.awk ../tse-indextest-output/wikipedia-index-1 > ../tse-sorted-indextest/wikipedia-index-1-sorted
 
 # compare
-diff -qy ../tse-index-output/wikipedia-index-1-sorted ../tse-sorted-index/wikipedia-index-1-sorted
+diff -qy ../tse-index-sorted/wikipedia-index-1-sorted ../tse-sorted-indextest/wikipedia-index-1-sorted
 if [ $? -ne 0 ]; then
     echo >&2 "wikipedia depth 1 indexer and indextest files are different "
     exit 1
@@ -498,18 +499,18 @@ fi
 # Comparing differences between indextest sorted output and that of with indexer sorted "
 echo "Comparing differences between indextest sorted output and that of with indexer sorted "
 # sort both files
-./indexsort.awk ../tse-index-output/wikipedia-index-2 > ../tse-index-output/wikipedia-index-2-sorted
-./indexsort.awk ../tse-indextest-output/wikipedia-index-2 > ../tse-sorted-index/wikipedia-index-2-sorted
+./indexsort.awk ../tse-index-output/wikipedia-index-2 > ../tse-index-sorted/wikipedia-index-2-sorted
+./indexsort.awk ../tse-indextest-output/wikipedia-index-2 > ../tse-sorted-indextest/wikipedia-index-2-sorted
 
 # compare 
-diff -qy ../tse-index-output/wikipedia-index-2-sorted ../tse-sorted-index/wikipedia-index-2-sorted
+diff -qy ../tse-index-sorted/wikipedia-index-2-sorted ../tse-sorted-indextest/wikipedia-index-2-sorted
 if [ $? -ne 0 ]; then
     echo >&2 "wikipedia depth 2 indexer and indextest files are different "
     exit 1
 fi
 
 echo "=============================================================="
-echo "Testing indextest on toscrape playground at depth 0, 1, 2"
+#echo "Testing indextest on toscrape playground at depth 0, 1, 2"
 
 # # indextest on toscrape at depth 0
 # echo "Testing indextest on toscrape at depth 0 file"

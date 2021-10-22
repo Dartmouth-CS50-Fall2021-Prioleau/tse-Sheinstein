@@ -62,7 +62,7 @@ pagescanner(webpage_t *page, hashtable_t *ht, bag_t *bag);
 void
 pagesaver(char *directory,int document_ID, webpage_t *page);
 
-/************** is_crawler_directory **************/
+/************** isCrawlerDirectory() **************/
 /*Input: User provides a directory name
  * We Verify whether given directory is indeed a Crawler-produced directory
  * We create the pathname, dir/.crawler,  and store it on the stack file and so do not need to free it.

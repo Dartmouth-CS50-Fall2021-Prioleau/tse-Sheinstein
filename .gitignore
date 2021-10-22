@@ -1,8 +1,10 @@
 # Do NOT add object files
 *.o
+*.dSYM
 .vscode
 tse-output
 tse-index-output
-tse-sorted-index
+tse-index-sorted
+tse-sorted-indextest
 tse-indextest-output
 

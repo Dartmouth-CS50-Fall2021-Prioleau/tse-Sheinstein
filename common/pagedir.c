@@ -96,6 +96,8 @@ pagesaver(char *directory,int document_ID, webpage_t *page)
     }else fprintf(stderr, " Saver could not normalize page\n");
 }
 
+/************************ is CrawlerDirectory() ***********************/
+/******* refer to isCrawlerDirectory documentation in pagedir.h ******/
 bool
 isCrawlerDirectory(char* directory)
 {
