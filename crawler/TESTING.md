@@ -44,3 +44,14 @@ To ensure that no pages are missing or duplicated, `crawler` also prints the fol
  Alternatively, and actually more conveniently, which I implemented in my testing.sh, user can just add `-rm -R *depth*` to the crawler `Makefile`. Here the user must be sure to only call  `make clean`  after running `make test` to avoid missing the target.
 
 3. Manual verification of correct performance of program.
+
+#### Index.c Unittesting
+`Unittest` IS DEFINED IN `unittest.h`. A glassbox of `index.c` unittesting is implemented .This way, index.c can run as a program if the unit test is defined. To run unittest user should simply run `make unittest` or `make unit` in the common directory. IMPORTANT:User should however ensure that they run crawler and have the `../tse-output/letters-depth-1` directory prodeced by crawler. This directory is is what is primarily used for testing the functionality of each one of the module's components. Failure to have the aforementioned driectory will lead to acute failure of the unit test program. Otherwise, the program effectively tests all the methods/ functions that index.c has to offer. To run valgrind on unittest, simply call `make valgrind`. The program test guarantees absolute zero memory leaks.
+
+##### Running Index Unittest
+The following are some importants remarks to runninng unnitest:
+1. Make sure crawler is run first to produce  `../tse-output/letters-depth-1` directory on which parts of the  unittesting  is based.
+2. To run the unittest, simply call `make unittest` or `make unit`. This call produces two files within the common directory namely `unittest-saved-index` and `unittest-loaded-index`. 
+3. To rid off all object files and the two unittest files, simply run `make clean`.
+
+
