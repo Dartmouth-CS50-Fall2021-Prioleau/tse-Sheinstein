@@ -87,23 +87,6 @@ index_find(index_t* index, const char* key);
 void
 index_iterate(index_t* index,  void *arg, void (*itemfunc)(void *arg, const char *key, void *item));
 
-/**************** index_print ****************/
-/* Print the whole table; provide the output file and func to print each item.
- * 
- * Caller provides:
- *   valid pointer to index, 
- *   FILE open for writing,
- *   itemprint that can print a single (key, item) pair.
- * We print:
- *   nothing, if NULL fp.
- *   "(null)" if NULL ht.
- *   one line per hash slot, with no items, if NULL itemprint.
- *   otherwise, one line per hash slot, listing (key,item) pairs in that slot.
- * Note:
- *   the index and its contents are not changed by this function,
- */
-
-// void index_print(index_t *index, void *fp, void (*itemprint)(void *fp, const char *key, void *item));
 
 /**************** index_delete ****************/
 /* Delete index, calling a delete function on each item.

@@ -129,5 +129,5 @@ Failure to enter correct bin will result in `indexsort.awk`failure to work altog
 
 ### Limitations
 
-1. ### Testing 
-As with crawler, the user has to manually compare  the outputs either indexer's or indextest's out[utswith the course website's outputs to verify that they are correct.
+1. #### Testing 
+As with crawler, the user has to manually compare  the outputs either indexer's or indextest's out[utswith the course website's outputs to verify that they are correct. The outputs can be found here [ http://cs50tse.cs.dartmouth.edu/tse-output/]

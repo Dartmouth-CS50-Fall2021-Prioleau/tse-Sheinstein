@@ -56,7 +56,7 @@
     6. Insert each key (word) item (counterset) pair into index’s hashtable
 7. Write the contents of the inverted data structure to `newIndexFilename`
 
-### Limits
+### Limitations
 
 1. `Hashtable`:When building the inverted index, it’s impossible to know in advance how many words will be found in all the pages encountered by the crawler. A reasonable size of the hashtable is picked i.e. 500 in the range of 200..900 slots as per advice in the lab instructions.
 

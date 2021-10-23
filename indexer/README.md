@@ -75,3 +75,22 @@ The program is free of memory leaks with all the test cases provided in `testing
 
 ### Memory Allocation Choices
 Where needed I allocated memory for objects on the stack to make debugging of memory leaks easy. However, whereever I used stack memeory, heap memory could be used instead, whuch is fundamentally much safer. If this code is to be repodused, user should consider using the heap to allocate memory and later call free on objects as need calls for it.
+
+### Teshing.sh and insexsort.awk - `which bin?` potential overlook.
+(...also reiterated in main README.md)
+
+The Lab website provided optional `indexsort.awk` intended to be used  in conjuction with testing.sh to sort indexer  and indextest outputs to allow for level comparrison. In lieu of making my own sorting script, I made use of the indexsort.awk script file. It  has the following Use description:
+
+```c
+/usr/bin/awk -f
+ Sort the document pairs on each line of a TSE index file,
+ and pipe output to `sort` so we sort the lines alphabetically.
+
+ usage example: ./indexsort.awk indexFilename > indexFilename.sorted
+ if that does not work, you may wish to try
+   gawk -f indexsort.awk indexFilename > indexFilename.sorted 
+```
+
+NOTE: User needs to make sure they enter the right bin their terminal is working on before executing the file. To check the bin user is on, simply type and enter `which bin` on the terminal and copy the output in the first line of the `indexsort.awk` script. For example if user is on `/usr/bin/` bin, they should enter  `/usr/bin/awk -f` in the first line of `indexsort.awk`. Similarly, if on `/usr/local/bin/`, enter  `/usr/local/bin/awk -f`.
+
+Failure to enter correct bin will result in `indexsort.awk`failure to work altogether.
