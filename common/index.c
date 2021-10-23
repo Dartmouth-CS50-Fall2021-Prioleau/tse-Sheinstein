@@ -245,7 +245,6 @@ print_key_item_pairs(void *arg, const int key, const int count)
 static void itemcount(void* arg, const char* key, void* item);
 static void itemdelete(void* item);
 static void item_index_delete(void *item);
-//static bool make_filepath(char* filepath);
 
 
 /* ==================== testing index_new =================*/
@@ -386,7 +385,7 @@ int test_newindex2(){
 }
 
 ////////////////////////////////////////////
-/*********************************  main *************8*****************************/
+/************************  main ********************************/
 int
 main(const int argc, const char *argv[])
 {
@@ -405,18 +404,6 @@ main(const int argc, const char *argv[])
   }
 }
 
-
-// static bool make_filepath(char* filepath){
-
-//     char file[strlen(filepath)+ 1]; //allocate memory on stack
-//     sprintf(file, "%s", filepath); // create path name
-//     FILE *fp = fopen(file, "w");
-//     if(fp != NULL){
-//         fclose(fp);
-//         return true ;
-//     }
-//     return false;
-// }
 /********************** static helper functions implemetations *************************/
 
 /* count the non-null items in the set.

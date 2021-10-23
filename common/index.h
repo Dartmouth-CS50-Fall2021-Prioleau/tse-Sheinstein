@@ -102,21 +102,6 @@ index_iterate(index_t* index,  void *arg, void (*itemfunc)(void *arg, const char
  *   We free the strings that represent key for each item, because 
  *   this module allocated that memory in index_insert.
  */
-
-/**************** index_delete ****************/
-/* Delete index, calling a delete function on each item.
- *
- * Caller provides:
- *   valid index pointer,
- *   valid pointer to function that handles one item (may be NULL).
- * We do:
- *   if index==NULL, do nothing.
- *   otherwise, unless itemfunc==NULL, call the itemfunc on each item.
- *   free all the key strings, and the index itself.
- * Notes:
- *   We free the strings that represent key for each item, because 
- *   this module allocated that memory in index_insert.
- */
 void
 index_delete(index_t *ht, void (*itemdelete)(void *item) );
 

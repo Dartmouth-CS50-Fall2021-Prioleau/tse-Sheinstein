@@ -35,7 +35,7 @@ indextest: indextest.o $(OBJS) $(LLIBS)
 .PHONY:  test valgrind clean
 
 test:
-	bash testing.sh
+	bash -v testing.sh &> testing.out
 valgrind: all 
 	valgrind ./indexer
 	valgrind ./indextest
