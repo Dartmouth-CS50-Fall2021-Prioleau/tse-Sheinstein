@@ -103,7 +103,7 @@ index_iterate(index_t* index,  void *arg, void (*itemfunc)(void *arg, const char
  *   the index and its contents are not changed by this function,
  */
 
-void index_print(index_t *index, void *fp, void (*itemprint)(void *fp, const char *key, void *item));
+// void index_print(index_t *index, void *fp, void (*itemprint)(void *fp, const char *key, void *item));
 
 /**************** index_delete ****************/
 /* Delete index, calling a delete function on each item.

@@ -18,6 +18,7 @@
 #include "../libcs50/counters.h"
 
 
+
 /*********************** file-local global variables ****************/
 /* none */
 
@@ -34,9 +35,7 @@ static void print_key_item_pairs(void *arg, const int key, const int count);
 /*********************** global types ***********************/
 typedef hashtable_t index_t;
 
-/*********************** global functions *********************/
-/* that is, visible outside this file */
-/* see index.h for comments about exported functions */
+
 
 
 /************************* index_new() ************************/
@@ -48,7 +47,7 @@ index_new(const int num_slots)
 }
 
 
-/************************* index_insert() ***********************/
+/************************* index_insert() ********************************/
 /* see index.h for description */
 bool
 index_insert(index_t* index, const char *key, void *item)
@@ -56,7 +55,7 @@ index_insert(index_t* index, const char *key, void *item)
     return (index_t*)hashtable_insert(index, key, item);
 }
 
-/****************************** index_find ****************************/
+/****************************** index_find ********************8*************/
 /* see index.h for description */
 void*
 index_find(index_t* index, const char* key)
@@ -65,15 +64,15 @@ index_find(index_t* index, const char* key)
 }
 
 
-/**************** index_print() ****************/
+/***************************** index_print() ********************************/
 /* see index.h for description */
-void index_print(index_t *index, void *fp, void (*itemprint)(void *fp, const char *key, void *item))
-{
-    hashtable_print(index,fp, itemprint);
-}
+//void index_print(index_t *index, void *fp, void (*itemprint)(void *fp, const char *key, void *item))
+//{
+//    hashtable_print(index,fp, itemprint);
+//}
 
 
-/************************* index_iterate() ***********************/
+/******************************* index_iterate() ********************************/
 /* see index.h for description */
 void
 index_iterate(index_t* index,  void *arg, void (*itemfunc)(void *arg, const char *key, void *item)){
@@ -81,7 +80,7 @@ index_iterate(index_t* index,  void *arg, void (*itemfunc)(void *arg, const char
 }
 
 
-/************************* index_delete() ************************/
+/****************************** index_delete() *******************************/
 /* see index.h for description */
 void
 index_delete(index_t *index, void (*itemdelete)(void *item) )
@@ -90,7 +89,7 @@ index_delete(index_t *index, void (*itemdelete)(void *item) )
 }
 
 
-/************************** index_build() ************************/
+/**************************8**** index_build() *****************************/
 /* see index.h for description */
 index_t*
 index_build(index_t *index, char *dir) {
@@ -158,7 +157,7 @@ index_build(index_t *index, char *dir) {
     return(index);  
 }
 
-/**************************** index_save() *************************/
+/****************************8**** index_save() *************8******************/
 /* see index.h for description */
 void
 index_save(index_t *index, char *filename)
@@ -176,7 +175,7 @@ index_save(index_t *index, char *filename)
 }
 
 
-/**************** index_load() ****************/
+/**************************** index_load() ****************8**********/
 /* see index.h for description */
 index_t*
 index_load(index_t *index, FILE *fp)
@@ -189,7 +188,7 @@ index_load(index_t *index, FILE *fp)
             while (fscanf(fp, "%d %d", &docID, &count) == 2) { // scan until end of line
                 counters_set(ctrs, docID, count); // put docID count pair into a counterset
             }
-            index_insert(index, word, ctrs); // put word and all associated docID count pairs into ht
+            index_insert(index, word, ctrs); // put word and all associated docID count pairs into index
             free(word);
         }
         else fprintf(stderr, "counters_new failed\n"); 
@@ -236,120 +235,189 @@ print_key_item_pairs(void *arg, const int key, const int count)
     fprintf((FILE*)arg, " %d %d", key, count); // print [docID count] pairs to file
 }
 
-/********************************************************
- **************** unit testing **************************
- ********************************************************/
-
-
+/*************************************************************************************
+ ******************************** unit testing ***************************************
+ ***********************************************************************************/
 #ifdef UNIT_TEST
-#include < stdbool.h>
-#include "../libcs50/memory.h"
-#include"../libcs50/counters.h"
+#include "unittest.h"
 
-#include "unittest.h" 
-// file-local global  varialbes
-static int unit_tested = 0; // number of test cases run
-static int unit_failed = 0; // number of test caser run
+/*************************** static helper function prototypes defined here ************/
+static void itemcount(void* arg, const char* key, void* item);
+static void itemdelete(void* item);
+static void item_index_delete(void *item);
+//static bool make_filepath(char* filepath);
 
-// a macro for  shorthand calls to expect()
-#define EXPECT(cond) {unit_expect((cond), __LINE__); }
 
-// Checks "condition", increments unit_tested, print FAILS or PASS
-void
-unit_expect(bool condition, int linenum)
+/* ==================== testing index_new =================*/
+/////////////////////////////////////
+// make index to work with
+int test_newindex0()
 {
-    unit_tested++;
-    if (condition){
-        printf("PASS test %03d at line %d\n", unit_tested, linenum);
-    }else{
-        printf("FAIL test %03d at line %d\n", unit_tested, linenum);
-        unit_failed++;
-    }
+    START_TEST_CASE("newindex0");
+    index_t* index0 = index_new(3);
+    EXPECT(index0 != NULL);
+    //EXPECT(index0-> size ==  3);
+    
+    EXPECT(index_find(index0, "Dartmouth") == NULL);
+
+    index_delete(index0, NULL);
+    EXPECT(count_net() == 0);
+
+    END_TEST_CASE;
+    return TEST_RESULT;
 }
-
-/************************************* main () ************************************/
-int
-main()
+/* =================== ordinary test of index_new, index_insert, index_find, index_delete ===============*/
+/////////////////////////////////////
+//  insert  5 things to the index_t index1
+int test_newindex1()
 {
-    // make index to work with
+    START_TEST_CASE("newindex1");
     index_t* index1 = index_new(7);
     EXPECT(index1 != NULL);
-    EXPECT(index1-> size > 0);
+    //EXPECT(index1-> size ==  7);
+    
+    EXPECT(index_find(index1, "Harvard") == NULL);
 
-    // insert  5 things to the index_t index1
-    index_insert(index1,"Princeton",1);
-    index_insert(index1,"Harvard",2);
-    index_insert(index1,"Yale",3);
-    index_insert(index1,"Columbia",3);
-    index_insert(index1,"Upenn",4);
-    index_insert(index1,"Dartmouth",5);
-
-    // check the number of key-item pairs in index
+    //char* Princeton = "Princeton"; char* Harvard = "Harvard"; char* Yale = "Yale"; char* Columbia = "Columbia"; char* Upenn = "Upenn";
+    int p  = 1 ;  int h = 2; int y = 3 ;  int c = 4; int u = 5;
     int index_count = 0;
-    EXPECT(index_iterate(index1, &index_count,itemcount) == 5);
+    EXPECT(index_insert(index1,"Princeton",&p) == true);
+    index_iterate(index1, &index_count,itemcount);
+    EXPECT(index_count == 1);
+    EXPECT(index_insert(index1,"Harvard",&h) == true);
+    index_count = 0;
+    index_iterate(index1, &index_count,itemcount);
+    EXPECT(index_count == 2)
+    EXPECT(index_insert(index1,"Yale",&y) == true);
+    index_count = 0;
+    index_iterate(index1, &index_count,itemcount);
+    EXPECT(index_count ==3);
+    EXPECT(index_insert(index1,"Columbia",&c) == true);
+    index_count = 0;
+    index_iterate(index1, &index_count,itemcount);
+    EXPECT(index_count ==4)
+
+    EXPECT(index_insert(index1,"Upenn",&u) == true);
+    index_count = 0;
+    index_iterate(index1, &index_count,itemcount);
+    EXPECT(index_count ==5)
 
     // try looking for a key present in the index and onother  absent
-    EXPECT(index_find(index1,"Columbia") != NULL);
-    EXPECT(index_find(index1,"Cornell") == NULL);
-    
-    // add one more key-value pair to index
-    index_insert(index1,"Cornell",6);
-    
-    // check that the number of items has increased to 6
+    EXPECT(index_find(index1,"Columbia") == &c);
+    EXPECT(index_find(index1,"Dartmouth") == NULL);
+    EXPECT(index_find(index1,NULL) == NULL);
+
+    //check for the number of items in index after finding some
     index_count = 0;
-    EXPECT(index_iterate(index1, &index_count,itemcount) == 6);
-   
-   // try looking for Cornell again. This time around, it should be present
-   EXPECT(index_find(index1,"Cornell") != NULL);
+    index_iterate(index1, &index_count,itemcount);
+    EXPECT(index_count ==5)
+
+    // add one more key-value pair to index
+    //char* Dartmouth = "Dartmouth";
+    int d = 6;
+    index_count = 0;
+    EXPECT(index_insert(index1,"Dartmouth", &d) == true);
+
+    //check for the number of items in index after finding some
+    index_count = 0;
+    index_iterate(index1, &index_count,itemcount);
+    EXPECT(index_count == 6);
+
+    // try looking for Cornell again. This time around, it should be present
+   EXPECT(index_find(index1,"Dartmouth") == &d);
 
    // delete all the items
-   index_delete(index1,itemdelete);
+   index_delete(index1, itemdelete);
+   EXPECT(count_net() == 0);
+   END_TEST_CASE;
+   return TEST_RESULT;
 
-   //check number of frees after deleting
-   EXPECT(count_net() == 0); // count_net is a function from memory.h 
+}
 
+/*============================= test_newindex2() ================================*/
+///////////////////////////////////////
+//test on actual output webpages in already existing directories
+int test_newindex2(){
+    START_TEST_CASE("newindex2");
 
-/* ===========test  index_build, index_save, and index_load with realtime directory with webpages ==================== */
-    
-   // make index to work with
-    index_t* index2 = assertp(index_new(200),"index_new failed\n") ;
+    // make new index
+    index_t* index2 = index_new(50);
     EXPECT(index2 != NULL);
-    EXPECT(index2->size > 200);
-
-    // build an index with ../tse-output/letters-depth-3 crawler produced directory and count
-    int new_index_count = 0;
-    index2 = index_build(index2, ../tse-output/letters-depth-3);
-    EXPECT(count_report() !=0);
-
-    // save the index
-    index_save(index2, ../tse-output/index-save-letters-depth-3);
-    EXPECT(count_report() != 0);
+    EXPECT(index_find(index2, "Dartmouth") == NULL);
     
-    // load the index
-    FILE *ofp = assertp(fopen(argv[1], "r"),"oldIndexFilename could not be opened for reading\n");
-    index_t* index3 = assertp(index_new(2*(lines_in_file(../tse-output/index-save-letters-depth-3)+1)),"index_new failed\n");
-    index_load(index3,../tse-output/index-load-letters-depth-3) ;
-    EXPECT(count_report() != 0);
+    /*=====test  index_build, index_save, and index_load with realtime directory with webpages ====== */
 
-    // clean up
-    index_delete(index, item_index_delete); // clean up
+     // build an index with ../tse-output/letters-depth-3 crawler produced directory and count
+    //int new_index_count = 0;
+    char* old_dir = "../tse-output/letters-depth-1";
+    index2 = index_build(index2,old_dir);
+    EXPECT(count_net() != 0);
+
+     // save the index
+    //make_filepath ("../tse-ouput/unittest-saved-index");
+    char* old_save_to_dir = "./unittest-saved-index";
+    index_save(index2,old_save_to_dir);
+    EXPECT(count_net() != 0);
+     
+    
+    // clean up index2
+    index_delete(index2, item_index_delete); // clean up
     EXPECT(count_net() == 0);
-    // check for frees after calls
 
+     // load the index
+    FILE *ofp = assertp(fopen(old_save_to_dir, "r"),"oldIndexFilename could not be opened for reading\n");
+    EXPECT(ofp != NULL);
+    index_t* index3 = index_new(2*(lines_in_file(ofp)+1));
+    EXPECT(index3 != NULL);
+    index3 = index_load(index3, ofp) ;
+    EXPECT(index3 != NULL);
+    //make_filepath("./tse-output/unittest-loaded-index");
+    char* load_to = "./unittest-loaded-index";
+    index_save(index3,load_to);
+    EXPECT(count_net() != 0);
+        
+     // clean up
+    index_delete(index3, item_index_delete); // clean up
+    EXPECT(count_net() == 0);
+     
+    END_TEST_CASE;
+    return TEST_RESULT;
 
+}
 
+////////////////////////////////////////////
+/*********************************  main *************8*****************************/
+int
+main(const int argc, const char *argv[])
+{
+  int failed = 0;
 
-   // print a summary
-   if(unit_failed >0){
-       printf(" FAILED %d of %d tests\n", unit_failed, unit tested);
-       return unit_failed;     
-   }else{
-       printf("PASSED all of %d tests\n", unit_tested);
-       return 0;
-   }
+  failed += test_newindex0();
+  failed += test_newindex1();
+  failed += test_newindex2();
+
+  if (failed) {
+    printf("\nFAILED %d test cases", failed);
+    return failed;
+  } else {
+    printf("\nPASSED all test cases\n");
+    return 0;
+  }
 }
 
 
+// static bool make_filepath(char* filepath){
+
+//     char file[strlen(filepath)+ 1]; //allocate memory on stack
+//     sprintf(file, "%s", filepath); // create path name
+//     FILE *fp = fopen(file, "w");
+//     if(fp != NULL){
+//         fclose(fp);
+//         return true ;
+//     }
+//     return false;
+// }
+/********************** static helper functions implemetations *************************/
 
 /* count the non-null items in the set.
  * note here we don't care what kind of item is in set.
@@ -367,22 +435,21 @@ static void itemcount(void* arg, const char* key, void* item)
 static void itemdelete(void* item)
 {
   if (item != NULL) {
-    //free(item);   
+    //free(item);   //nothing to free since items were not malloc space allocated
   }
 
 }   
 
-/**************** item_delete ****************/
-/* Frees item memory of items in index ie. counterset.
- */
-void
-item_index_delete(void *item)
-{
-    if (item != NULL) {
+// /**************** item_index_delete ****************/
+ /* Frees item memory of items in index ie. counterset.
+  */
+ static void item_index_delete(void *item)
+ {
+     if (item != NULL) {
         counters_delete(item); // delete the counterset
-        //item = NULL;
-    }
-}
+        item = NULL;
+     }
+ }
 
 #endif // UNIT_TEST
 

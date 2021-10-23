@@ -26,14 +26,28 @@ $(LIB): $(OBJS)
 	ar cr $(LIB) $(OBJS)
 
 # Dependencies: object files depend on header files
-pagedir.o: pagedir.h $L/webpage.h
-word.o: word.h
-index.o: index.h $L/file.h $L/webpage.h
 
-.PHONY: clean
+index.o: index.h word.h $L/file.h $L/webpage.h $L/memory.h $L/hashtable.h $L/counters.h 
+word.o: word.h
+pagedir.o: pagedir.h $L/webpage.h
+
+.PHONY: unittest unit valgrind clean
+
+unittest: index.c unittest.h word.o $L/jhash.o $L/set.o $L/memory.o $L/file.o $L/webpage.o $L/hashtable.o $L/counters.o
+	$(CC) $(CFLAGS) -DUNIT_TEST index.c  $L/bag.o word.o $L/jhash.o $L/set.o $L/memory.o $L/file.o $L/webpage.o $L/hashtable.o  $L/counters.o -o unittest
+	./unittest
+
+unit: unittest
+	./unittest
+
+valgrind: ./unittest
+	valgrind ./unittest
 
 clean:
+	rm -rf *.dSYM
 	rm -f core
 	rm -f $(LIB) *~ *.o
+	rm -f unittest
+	rm -f unittest-loaded-index
+	rm -f unittest-saved-index
 
-	

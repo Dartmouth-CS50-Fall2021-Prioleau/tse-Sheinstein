@@ -286,12 +286,14 @@ echo "============================================================"
 # The tests cases defined in this block should  all pass 
 echo " Also comparing sorted files of indexer and indextest "
 
+#solutions_path=/thayerfs/courses/21fall/cosc050.02/workspace/cs50tse/tse-output
 
 # include indexsort.awk to sort the files and creat the directory to hold those files
 chmod +x indexsort.awk
 mkdir ../tse-index-sorted
 mkdir ../tse-sorted-indextest
 mkdir ../tse-indextest-output
+#mkdir ../tse-path-sorted-solutions
 
 
 echo "Testing indextest on letters at depth 0, 1, 2, 3, 4, 5"
@@ -312,8 +314,9 @@ fi
 echo "Comparing differences between indextest sorted output and that of with indexer sorted "
 ./indexsort.awk ../tse-index-output/letters-index-0 > ../tse-index-sorted/letters-index-0-sorted
 ./indexsort.awk ../tse-indextest-output/letters-index-0 > ../tse-sorted-indextest/letters-index-0-sorted
+.#/indexsort.awk $solutions_path/letters-index-0 > ../tse-path-sorted-solutions/letters-index-0-sorted
 
-diff -qy ../tse-index-sorted/letters-index-0-sorted ../tse-sorted-indextest/letters-index-0-sorted
+diff -qy ../tse-index-sorted/letters-index-0-sorted ../tse-sorted-indextest/letters-index-0-sorted  #../tse-path-sorted-solutions/letters-index-0-sorted 
 if [ $? -ne 0 ]; then
     echo >&2 "letters depth 0 indexer and indextest files are different "
     echo " "
@@ -335,8 +338,9 @@ fi
 echo "Comparing differences between indextest sorted output and that of with indexer sorted "
 ./indexsort.awk ../tse-index-output/letters-index-1 > ../tse-index-sorted/letters-index-1-sorted
 ./indexsort.awk ../tse-indextest-output/letters-index-1 > ../tse-sorted-indextest/letters-index-1-sorted
+#./indexsort.awk solutions_path/letters-index-1 > ../tse-path-sorted-solutions/letters-index-1-sorted
 
-diff -qy ../tse-index-sorted/letters-index-1-sorted ../tse-sorted-indextest/letters-index-1-sorted
+diff -qy ../tse-index-sorted/letters-index-1-sorted ../tse-sorted-indextest/letters-index-1-sorted #../tse-path-sorted-solutions/letters-index-1-sorted
 if [ $? -ne 0 ]; then
     echo >&2 "letters depth 1 indexer and indextest files are different "
     echo " "
@@ -360,8 +364,9 @@ fi
 echo "Comparing differences between indextest sorted output and that of with indexer sorted "
 ./indexsort.awk ../tse-index-output/letters-index-2 > ../tse-index-sorted/letters-index-2-sorted
 ./indexsort.awk ../tse-indextest-output/letters-index-2 > ../tse-sorted-indextest/letters-index-2-sorted
+#./indexsort.awk solutions_path/letters-index-2 > ../tse-path-sorted-solutions/letters-index-2-sorted
 
-diff -qy ../tse-index-sorted/letters-index-2-sorted ../tse-sorted-indextest/letters-index-2-sorted
+diff -qy ../tse-index-sorted/letters-index-2-sorted ../tse-sorted-indextest/letters-index-2-sorted #../tse-path-sorted-solutions/letters-index-2-sorted
 if [ $? -ne 0 ]; then
     echo >&2 "letters depth 2 indexer and indextest files are different "
     exit 1
@@ -383,8 +388,9 @@ fi
 echo "Comparing differences between indextest sorted output and that of with indexer sorted "
 ./indexsort.awk ../tse-index-output/letters-index-3 > ../tse-index-sorted/letters-index-3-sorted
 ./indexsort.awk ../tse-indextest-output/letters-index-3 > ../tse-sorted-indextest/letters-index-3-sorted
+#./indexsort.awk solutions_path/letters-index-3 > ../tse-path-sorted-solutions/letters-index-3-sorted
 
-diff -qy ../tse-index-sorted/letters-index-3-sorted ../tse-sorted-indextest/letters-index-3-sorted
+diff -qy ../tse-index-sorted/letters-index-3-sorted ../tse-sorted-indextest/letters-index-3-sorted #../tse-path-sorted-solutions/letters-index-3-sorted
 if [ $? -ne 0 ]; then
     echo >&2 "letters depth 3 indexer and indextest files are different "
     echo " "
@@ -407,8 +413,9 @@ fi
 echo "Comparing differences between indextest sorted output and that of with indexer sorted "
 ./indexsort.awk ../tse-index-output/letters-index-4 > ../tse-index-sorted/letters-index-4-sorted
 ./indexsort.awk ../tse-indextest-output/letters-index-4 > ../tse-sorted-indextest/letters-index-4-sorted
+#./indexsort.awk solutions_path/letters-index-4 > ../tse-path-sorted-solutions/letters-index-4-sorted
 
-diff -qy ../tse-index-sorted/letters-index-4-sorted ../tse-sorted-indextest/letters-index-4-sorted
+diff -qy ../tse-index-sorted/letters-index-4-sorted ../tse-sorted-indextest/letters-index-4-sorted #../tse-path-sorted-solutions/letters-index-4-sorted
 if [ $? -ne 0 ]; then
     echo >&2 "letters depth 4 indexer and indextest files are different "
      echo " "
@@ -453,9 +460,9 @@ echo "Comparing differences between indextest sorted output and that of with ind
 # sort both files
 ./indexsort.awk ../tse-index-output/wikipedia-index-0 > ../tse-index-sorted/wikipedia-index-0-sorted
 ./indexsort.awk ../tse-indextest-output/wikipedia-index-0 > ../tse-sorted-indextest/wikipedia-index-0-sorted
-
+#./indexsort.awk solutions_path/wikipideia-index-0 > ../tse-path-sorted-solutions/wikipedia-index-0-sorted
 # compare
-diff -qy ../tse-index-sorted/wikipedia-index-0-sorted ../tse-sorted-indextest/wikipedia-index-0-sorted
+diff -qy ../tse-index-sorted/wikipedia-index-0-sorted ../tse-sorted-indextest/wikipedia-index-0-sorted #../tse-path-sorted-solutions/wikipedia-index-0-sorted
 if [ $? -ne 0 ]; then
     echo >&2 "wikipedia depth 0 indexer and indextest files are different "
     exit 1
@@ -477,9 +484,9 @@ echo "Comparing differences between indextest sorted output and that of with ind
 # sort both files
 ./indexsort.awk ../tse-index-output/wikipedia-index-1 > ../tse-index-sorted/wikipedia-index-1-sorted
 ./indexsort.awk ../tse-indextest-output/wikipedia-index-1 > ../tse-sorted-indextest/wikipedia-index-1-sorted
-
+#./indexsort.awk solutions_path/wikipideia-index-1 > ../tse-path-sorted-solutions/wikipedia-index-1-sorted
 # compare
-diff -qy ../tse-index-sorted/wikipedia-index-1-sorted ../tse-sorted-indextest/wikipedia-index-1-sorted
+diff -qy ../tse-index-sorted/wikipedia-index-1-sorted ../tse-sorted-indextest/wikipedia-index-1-sorted #../tse-path-sorted-solutions/wikipedia-index-1-sorted
 if [ $? -ne 0 ]; then
     echo >&2 "wikipedia depth 1 indexer and indextest files are different "
     exit 1
@@ -501,9 +508,11 @@ echo "Comparing differences between indextest sorted output and that of with ind
 # sort both files
 ./indexsort.awk ../tse-index-output/wikipedia-index-2 > ../tse-index-sorted/wikipedia-index-2-sorted
 ./indexsort.awk ../tse-indextest-output/wikipedia-index-2 > ../tse-sorted-indextest/wikipedia-index-2-sorted
+#./indexsort.awk solutions_path/wikipideia-index-2 > ../tse-path-sorted-solutions/wikipedia-index-2-sorted
 
 # compare 
-diff -qy ../tse-index-sorted/wikipedia-index-2-sorted ../tse-sorted-indextest/wikipedia-index-2-sorted
+diff -qy ../tse-index-sorted/wikipedia-index-2-sorted ../tse-sorted-indextest/wikipedia-index-2-sorted #../tse-path-sorted-solutions/wikipedia-index-2-sorted
+
 if [ $? -ne 0 ]; then
     echo >&2 "wikipedia depth 2 indexer and indextest files are different "
     exit 1

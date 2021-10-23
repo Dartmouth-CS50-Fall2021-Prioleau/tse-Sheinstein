@@ -27,6 +27,10 @@ TAGS:  Makefile */Makefile */*.c */*.h */*.md */*.sh
 clean:
 	rm -f *~
 	rm -f TAGS
+	rm -rf tse-index-output
+	rm -rf tse-index-sorted
+	rm -rf tse-indextest-output
+	rm -rf tse-sorted-indextest
 	$(MAKE) -C libcs50 clean
 	$(MAKE) -C common clean
 	$(MAKE) -C crawler clean
