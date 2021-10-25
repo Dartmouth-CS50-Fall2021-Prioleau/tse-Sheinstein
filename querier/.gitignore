@@ -1,0 +1,5 @@
+# Do NOT add object files
+*.o
+*.dSYM
+querier
+fuzzquery
