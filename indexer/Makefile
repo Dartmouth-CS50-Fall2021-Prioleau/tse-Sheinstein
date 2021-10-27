@@ -36,9 +36,11 @@ indextest: indextest.o $(OBJS) $(LLIBS)
 
 test:
 	bash -v testing.sh &> testing.out
+
 valgrind: all 
 	valgrind ./indexer
 	valgrind ./indextest
+	
 clean:
 	rm -f *~ *.o *.dSYM
 	rm -f indexer indextest

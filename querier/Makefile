@@ -42,6 +42,7 @@ clean:
 	rm -f querier
 	rm -f stocks
 	rm -f core
-	rm -f fuzzquery
+	rm -f fuzzquery 
+	rm -f querier
 
-	
+

@@ -22,7 +22,7 @@ chmod +x testing.sh # change mode of .out file to executable
 mkdir ../tse-index-output
 
 make
-make[1]: *** No rule to make target `../libcs50/libcs50.a', needed by `indexer'.  Stop.
+make[1]: Nothing to be done for `all'.
 
 mkdir  ../tse-index-output/argstest-index
 
