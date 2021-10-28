@@ -555,20 +555,3 @@ Comparing differences between indextest sorted output and that of with indexer s
 # sort both files
 ./indexsort.awk ../tse-index-output/wikipedia-index-2 > ../tse-index-sorted/wikipedia-index-2-sorted
 ./indexsort.awk ../tse-indextest-output/wikipedia-index-2 > ../tse-sorted-indextest/wikipedia-index-2-sorted
-
-
-# compare 
-diff -qy ../tse-index-sorted/wikipedia-index-2-sorted ../tse-sorted-indextest/wikipedia-index-2-sorted 
-
-if [ $? -ne 0 ]; then
-    echo >&2 "wikipedia depth 2 indexer and indextest files are different "
-    exit 1
-fi
-
-
-echo "=============================================================="
-==============================================================
-echo "================== End of testing.sh =================="
-================== End of testing.sh ==================
-
-exit 0

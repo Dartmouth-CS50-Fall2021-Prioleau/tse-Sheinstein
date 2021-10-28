@@ -14,8 +14,13 @@
 #ifndef __WORD_H
 #define __WORD_H
 
-#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include "word.h"
+#include <ctype.h>
+#include <unistd.h>
+#include <stdbool.h>
 
 /*********************** normalize_word() *************************/
 /* Coverts a given word to all-lower case and returns the  word to caller
@@ -25,4 +30,24 @@
  */
 char* normalize_word(char* word); 
 
+
+/***************************** get_tokens() *******************************/
+/* Extracts words from a line of words and returns the number of extracted words
+ * Extracts by delimeter " ", adds word to given array if word
+ * comprises of only letters.
+ * brekas if a word contains non-alpha character.
+ */
+int 
+get_tokens(char* line, const char* arr[]);
+
+
+
+/*************************** is_Alpha() ***************************/
+/* Returns true if given character contains only letters
+ * Returns false otherwise.
+*/
+bool is_Alpha(char *word);
+
+
 #endif // __WORD_H
+

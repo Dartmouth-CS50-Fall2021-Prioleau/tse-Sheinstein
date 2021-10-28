@@ -12,6 +12,8 @@
 #include <string.h>
 #include "word.h"
 #include <ctype.h>
+#include <unistd.h>
+#include <stdbool.h>
 
 /**************** functions ****************/
 
@@ -25,3 +27,48 @@ char* normalize_word(char* word)
     return word;
 }
 
+
+/***************************** get_tokens() *******************************/
+/* see words.h for description
+ */
+
+int 
+get_tokens(char* line, const char* arr[])
+ {
+
+     int word_count = 0;
+
+     //read queries from stdin
+     char* word = strtok(line, " "); // extract words using " " delimeter
+    
+     while (word != NULL){
+         if(is_Alpha(word)){
+            arr[word_count] = word;
+            //printf("extracted words is %s\n", word);
+            word = strtok(NULL, " ");
+            word_count++;
+         }
+         else break;
+     }
+     return word_count;
+ }
+
+
+/*************************** is_Alpha() ***************************/
+/* Returns true if given character contains only letters
+ * Returns false otherwise.
+*/
+bool is_Alpha(char *word) 
+ {
+     int i;
+     for (i = 0; i < strlen(word); i++) {
+         if (!isalpha(word[i])) { // check for bad characters
+             fprintf(stderr, "Error: bad character '%c' in query.\n", word[i]);
+             return false; 
+         }
+     }
+     return true;
+ }
+
+
+ 

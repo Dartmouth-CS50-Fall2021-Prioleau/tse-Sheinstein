@@ -28,18 +28,19 @@
 /* none */
 
 /******************************* local types ****************************/
-
+/************ two_ctrs_t ****************/
 typedef struct two_ctrs {
   counters_t *c1;
   counters_t *c2;
 } two_ctrs_t;
 
+/************* document_t ***************/
 typedef struct document {
   int score;
   int ID;
   char * URL;
 } document_t;
-
+/*********** arr_and_string_t ************/
 typedef struct arr_and_string {
   document_t ** arr;
   int length;
@@ -57,22 +58,24 @@ static void counters_merge_helper(void *arg, const int key, int count_B);
 static void counters_intersect(counters_t *ctrs_A, counters_t *ctrs_B);
 static void counters_intersect_helper(void *arg, const int key, int count_A);
 static char *getDocumentURL(char * directory, int docID);
+static bool isOperator (const char *word);
 static void count_matches(void *arg, const int key, int count);
 static void sort_matches(void *arg, const int docID, int myScore);
 static void item_delete(void *item);
 
+
 /***************************** Function Prototypes **************************/
 int check_input(int argc, char *argv[]);
-void process_query(index_t *idx, char * directory, int size);
-int get_tokens(char * line, const char* arr[]);
+void process_query(index_t *idx, char * directory);
 bool is_satify_query(const char * arr[], int count);
 void run_query(index_t *idx, char * directory, const char* arr[], int size);
-bool isOperator (const char *word);
 counters_t* counters_product (index_t *idx, const char * arr[], int curPos, 
 int * posAddress, int arr_size);
 counters_t* sum_counters (index_t *idx, const char * arr[], int size);
 
-/***************************** main() *****************************/
+
+
+/***************************** main() ****************************************/
 int
 main(int argc, char *argv[]) 
 {
@@ -84,11 +87,12 @@ main(int argc, char *argv[])
     
     // check if indexFilename is the pathname of a readable file
     FILE *fp = assertp(fopen(argv[2], "r"), "indexFilename could not be opened for reading\n"); 
-    int file_size = lines_in_file(fp);
+    //int file_size = lines_in_file(fp);
 
     // load the inverted index
     const int NUMSLOTS = 2*(lines_in_file(fp)+1); // create index 
     index_t* index = index_new(NUMSLOTS);
+
     if (index == NULL) {
         fprintf(stderr, "index_new failed\n");
         fclose(fp);
@@ -100,8 +104,10 @@ main(int argc, char *argv[])
     index = assertp(index_load(index, fp), "Error loading index from file");
     fclose(fp);
 
+
+    //prompt();
     // process Query from stdin
-    process_query(index, argv[1], file_size);
+    process_query(index, argv[1]);
 
     // clean up
     printf("Cleaning up...\n");
@@ -146,60 +152,42 @@ check_input(int argc, char *argv[])
 }
 
 
-/*********************************** process_query() *******************************************/
+/****************************** process_query() *********************************/
 /* 
-* Processes each query
+* Processes each query, and prompts the next one
 */
 
 
-void process_query(index_t *idx, char * directory, int size)
+void process_query(index_t *idx, char * directory)
 {
     // max number of words we expect on a single query
-    const int NUMSLOTS = 2*(size+1); // create index 
+    int NUMSLOTS = 50; // create index 
+    const char * extracted_words[NUMSLOTS]; // allocate memory for query tokens on stack
 
-    const char * words[NUMSLOTS]; // allocate memory for query tokens on stack
-    //char* words[50] ={{'\0'}};
     prompt(); // request query if a tty
 
+    char* line; 
+    while((line = freadlinep(stdin)) != NULL){
+     
+        int count  = get_tokens(line, extracted_words);
 
-
-
-
-    // Read Queries from stdin
-
-    char *line;
-    while ( (line = freadlinep(stdin) ) != NULL){
-        // Extract each word from the query
-        // and keep track of how many were extracted    
-        //bool success = false;
-
-        int word_count = get_tokens(line, words);
-        //int word_count = load_words_from_line(line, words, success);
-
-
-
-
-        // if query is valid ...
-        if (word_count > 0 && is_satify_query(words, word_count)){
-            // Print cleaned-up query
-            printf("query:");
-            for (int i = 0; i < word_count; i ++){
-                printf(" %s", words[i]);
+        if((count > 0) && (is_satify_query(extracted_words, count)))
+        {    
+            printf("query: ");
+            for (int i = 0; i < count; i ++){
+                printf(" %s", extracted_words[i]);
             }
             printf("\n");
 
             //run the query
-            run_query(idx, directory, words, word_count);
-            
+            run_query(idx, directory, extracted_words, count); 
         }
-        // Cleanup
-        free(line); 
-       // memset(words, '\0', sizeof(words)); // empty array for next query
-        prompt();  // request next query if a tty   
+        free(line);
+        prompt();
+
     }
+
 }
-
-
 
 
 
@@ -216,56 +204,6 @@ static void prompt(void)
 
 
 
-/***************************** get_tokens() ****************************/
-/* 
-* Extracts all words from the given string, converts them to lowercase,
-* and inserts them into the user given array.
-*Returns the count of word tokens  extracted from line.
-*/
-int
-get_tokens(char * line, const char* arr[])
- {
-    char *tokens = line;
-    int count = 0; // index of current word
-    while (true){
-
-        // advance character at a time while keep seeing spaces
-        //until you see an alpha word
-        char *word = tokens;
-        while (isspace(*word)){
-            word++;
-        }
-        // read the word
-        tokens = word;
-        while (isalpha(*tokens)){
-            tokens++;
-        }
-        // if you meet a space, end of word. 
-        //symblize by replacing space  with null character '\0 '...
-        if (isspace(*tokens)){
-            //found end of word
-            *tokens = '\0';
-            tokens ++; // advance pointer  to next character 
-            normalize_word(word); // convert found word to lower case
-            arr[count] = word; // add word to array
-            count ++; // increment word count of query
-        }
-         // if bumped into null character, reached end of word,...
-        else{
-             if (*tokens == '\0') { 
-                normalize_word(word); // normalise read word
-                arr[count] = word; // add to array
-                return ++count; // increment word count of query 
-            }
-            fprintf(stderr, "Error: bad character \'%c\' in query\n", *tokens);
-            return -1;
-        }
-    }
-    
-}
-
-
-
 /****************************** is_satify_query() ******************************************/
 /* 
 * Checks for invalid query.
@@ -278,7 +216,7 @@ get_tokens(char * line, const char* arr[])
  in a query.
  otherwise returns false
 */
- bool
+bool
 is_satify_query(const char * arr[], int count)
   {
     // check for empty query
@@ -302,6 +240,19 @@ is_satify_query(const char * arr[], int count)
     // Valid query
     return true;
 
+}
+
+
+/************************** isOperator() ***************************/
+/* 
+* Returns true if word is "and" or "or"
+*/
+static bool
+isOperator (const char *word){
+    if( (strcmp (word, "and") == 0) || (strcmp(word, "or") == 0) ){
+        return true;
+    }
+    return false;
 }
 
 
@@ -363,21 +314,6 @@ run_query(index_t *idx, char * directory, const char* arr[], int size)
     counters_delete(result);
     count_free(arr_and_s);
 }
-
-
-
-/***************************** isOperator() *****************************/
-/* 
-* Returns true if word is "and" or "or"
-*/
-bool
-isOperator (const char *word){
-    if( (strcmp (word, "and") == 0) || (strcmp(word, "or") == 0) ){
-        return true;
-    }
-    return false;
-}
-
 
 
 
@@ -566,7 +502,7 @@ sort_matches(void *arg, const int docID, int myScore)
 /******************************** item_delete() *****************************/
 /* Frees item memory of items in index ie. counterset.
 */
-void
+static void
 item_delete(void *item)
 {
     if (item != NULL) {
