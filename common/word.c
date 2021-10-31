@@ -64,11 +64,13 @@ bool is_Alpha(char *word)
      for (i = 0; i < strlen(word); i++) {
          if (!isalpha(word[i])) { // check for bad characters
              fprintf(stderr, "Error: bad character '%c' in query.\n", word[i]);
+             fprintf(stdout, "-----------------------------------------------------------------------------------\n");
              return false; 
          }
      }
      return true;
  }
+
 
 
  

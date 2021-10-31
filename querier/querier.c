@@ -21,6 +21,7 @@
 #include "../libcs50/file.h"
 #include "../libcs50/hashtable.h"
 #include "../libcs50/counters.h"
+#include "querier.h"
 
 
 
@@ -29,17 +30,29 @@
 
 /******************************* local types ****************************/
 /************ two_ctrs_t ****************/
+/* hold two counter sets
+ * Later passed to counters_intersect
+ to obtain the inntersention of the two
+ counter sets
+ *
+ */
+
 typedef struct two_ctrs {
   counters_t *c1;
   counters_t *c2;
 } two_ctrs_t;
 
 /************* document_t ***************/
+/*structure that holds details of the document ot be
+ * printed to stdout after query
+ *
+ */
 typedef struct document {
   int score;
   int ID;
   char * URL;
 } document_t;
+
 /*********** arr_and_string_t ************/
 typedef struct arr_and_string {
   document_t ** arr;
@@ -47,10 +60,8 @@ typedef struct arr_and_string {
   char * string;
 } arr_and_string_t;
 
-/************************ global functions **********************/
-/* that is, visible outside this file */
 
-/*********************** local functions *************************/
+/*********************** local functions prototypes *************************/
 /* not visible outside this file */
 static void prompt(void);
 static void counters_merge(counters_t *ctrs_A, counters_t *ctrs_B);
@@ -59,29 +70,29 @@ static void counters_intersect(counters_t *ctrs_A, counters_t *ctrs_B);
 static void counters_intersect_helper(void *arg, const int key, int count_A);
 static char *getDocumentURL(char * directory, int docID);
 static bool isOperator (const char *word);
+static counters_t* counters_product (index_t *idx, const char * arr[], int curPos, int * posAddress, int arr_size);
+static counters_t* counters_sum (index_t *idx, const char * arr[], int size);
 static void count_matches(void *arg, const int key, int count);
 static void sort_matches(void *arg, const int docID, int myScore);
 static void item_delete(void *item);
+static void copy(void *arg, const int key, const int count);
 
+/***************************** globa Function Prototypes **************************/
+/* that is, visible outside this file */
 
-/***************************** Function Prototypes **************************/
-int check_input(int argc, char *argv[]);
+int check_query_input(int argc, char *argv[]);
 void process_query(index_t *idx, char * directory);
 bool is_satify_query(const char * arr[], int count);
 void run_query(index_t *idx, char * directory, const char* arr[], int size);
-counters_t* counters_product (index_t *idx, const char * arr[], int curPos, 
-int * posAddress, int arr_size);
-counters_t* sum_counters (index_t *idx, const char * arr[], int size);
-void copy(void *arg, const int key, const int count);
 
-
+// isAlpha
 /***************************** main() ****************************************/
 int
 main(int argc, char *argv[]) 
 {
     // validate parameters
     int error_code;
-    if ( (error_code = check_input(argc, argv)) != 0){
+    if ( (error_code = check_query_input(argc, argv)) != 0){
         return error_code;
     }
     
@@ -120,15 +131,15 @@ main(int argc, char *argv[])
 }
 
 
-/**************************** helper function implementation **************************/
+/****************************  global  helper  functions implementation **************************/
 
-/*************************************** check_input() *********************************/
-/* Makes sure input directory exist and is indeed cra;wer produced
-* exits non-zero if the number of inputs !=3, directory is not crawler prodeuced,
-or index filename is not readable.
+/*************************************** check_query_input() *********************************/
+/*
+ * see querier.h for description
+ *
 */
 int
-check_input(int argc, char *argv[])
+check_query_input(int argc, char *argv[])
 {
     //Check for correct number of parameters
     if (argc != 3){
@@ -152,9 +163,53 @@ check_input(int argc, char *argv[])
 }
 
 
+
+/****************************** is_satify_query() ****************************/
+/*
+ * see querier.h for description
+ *
+*/
+bool
+is_satify_query(const char * arr[], int count)
+  {
+    // check for empty query
+    if (arr[0] == NULL || strcmp(arr[0], " ") == 0 || strcmp(arr[0], "") == 0){
+         return false;
+    }
+
+    //check for operator at beginning or end
+    if ( isOperator(arr[0]) ){
+        printf("Error: the word %s cannot be first \n", arr[0]);
+        fprintf(stdout, "-----------------------------------------------------------------------------------\n");
+        return false;
+    }
+    if ( isOperator(arr[count-1]) ){
+        printf("Error: the word %s cannot be last \n", arr[count-1]);
+        fprintf(stdout, "-----------------------------------------------------------------------------------\n");
+        return false;
+    }
+
+
+    //check for consecutive operators
+    for (int i = 0; i < count -2; i ++){
+        if (isOperator(arr[i]) && isOperator(arr[i+1])){
+            printf("Error: cannot have two consecutive operators\n");
+            fprintf(stdout, "-----------------------------------------------------------------------------------\n");
+            return false;
+        }
+    }
+    // Valid query
+    return true;
+
+}
+
+
+
+
 /****************************** process_query() *********************************/
-/* 
-* Processes each query, and prompts the next one
+/*
+ * see querier.h for description
+ *
 */
 
 
@@ -182,6 +237,10 @@ void process_query(index_t *idx, char * directory)
             //run the query
             run_query(idx, directory, extracted_words, count); 
         }
+        //else{
+            //printf(stderr, "Could not run query on input");
+            //return ;
+       // }
         free(line);
         memset(extracted_words, '\0', sizeof(extracted_words));
         prompt();
@@ -192,81 +251,15 @@ void process_query(index_t *idx, char * directory)
 
 
 
-/*************************** prompt() ****************************/
-/* Function given by cs50 Lab 6 instructions. 
- * Prints a prompt only if stdin is a tty (terminal).
- */
-static void prompt(void)
-{
-    if (isatty(fileno(stdin))) {
-        printf("Query? ");
-    }
-}
-
-
-
-/****************************** is_satify_query() ****************************/
-/* 
-* Checks for invalid query.
- Returns true if query is valid, 
- Returns false if arr of word toekns is NULL ,or a space token was extracted,
- or an empty token was extracted.
- *Also retruns false if an operator "and " or "or" occurs at the beginning or end 
- of query 
- *And finally, also returns false if two operators are adjacent to
- in a query.
- running_product_copywise returns false
-*/
-bool
-is_satify_query(const char * arr[], int count)
-  {
-    // check for empty query
-    if (arr[0] == NULL || strcmp(arr[0], " ") == 0 || strcmp(arr[0], "") == 0){
-         return false;
-    }
-
-    //check for operator at beginning or end
-    if ( isOperator(arr[0]) || isOperator(arr[count-1]) ){
-        printf("Error: the words: \"and\" \"or\" cannot be first or last\n");
-        return false;
-    }
-
-    //check for consecutive operators
-    for (int i = 0; i < count -2; i ++){
-        if (isOperator(arr[i]) && isOperator(arr[i+1])){
-            printf("Error: cannot have two consecutive operators\n");
-            return false;
-        }
-    }
-    // Valid query
-    return true;
-
-}
-
-
-/************************** isOperator() ***************************/
-/* 
-* Returns true if word is "and" or "or"
-*/
-static bool
-isOperator (const char *word){
-    if( (strcmp (word, "and") == 0) || (strcmp(word, "or") == 0) ){
-        return true;
-    }
-    return false;
-}
-
-
-
 /*******************************run_query() *****************************/
 /*
-* Searches for matches to the query tokens in given index of word:document pages,
-* scores them and prints a list of documents in ranked order.
+ * see querier.h for description
+ *
 */
 void
 run_query(index_t *idx, char * directory, const char* arr[], int size)
 {
-    counters_t *result = sum_counters(idx, arr, size);
+    counters_t *result = counters_sum(idx, arr, size);
 
     // Count the number of matches
     int num_matches = 0;
@@ -316,12 +309,45 @@ run_query(index_t *idx, char * directory, const char* arr[], int size)
     count_free(arr_and_s);
 }
 
-/************************** sum_counters() ********************************/
+
+
+/*************************************** local helper functions ***********************************************/
+
+
+/*************************** prompt() ****************************/
+/* Function given by cs50 Lab 6 instructions. 
+ * Prints a prompt only if stdin is a tty (terminal).
+ */
+static void prompt(void)
+{
+    if (isatty(fileno(stdin))) {
+        printf("Query? ");
+    }
+}
+
+
+
+/************************** isOperator() ***************************/
+/* 
+* Returns true if word is "and" or "or"
+*/
+static bool
+isOperator (const char *word){
+    if( (strcmp (word, "and") == 0) || (strcmp(word, "or") == 0) ){
+        return true;
+    }
+    return false;
+}
+
+
+
+
+/************************** counters_sum() ********************************/
 /* 
 * Computes a running sum of counters items
 */
-counters_t*
-sum_counters (index_t *idx, const char * arr[], int size) {
+static counters_t*
+counters_sum (index_t *idx, const char * arr[], int size) {
     counters_t *running_sum = counters_new();
     int pos = 0;
     while (pos < size){
@@ -341,7 +367,7 @@ sum_counters (index_t *idx, const char * arr[], int size) {
 /* 
 * Computes a product of counters items
 */
-counters_t*
+static counters_t*
 counters_product (index_t *idx, const char * arr[], int pos, int * posAddress, int arr_size) {
     const char * word = arr[pos];
     counters_t *running_product = index_find(idx, word);
@@ -401,9 +427,15 @@ counters_merge_helper(void *arg, const int key, int count_B)
 }
 
 
-// make a copy of a counters struct
-void copy(void *arg, const int key, const int count){
-    if (arg != NULL){
+/****************************** copy () **************************************/
+/* make a copy of a counters struct
+ *
+ */
+static void
+copy(void *arg, const int key, const int count)
+{
+    if (arg != NULL)
+    {
         counters_t *running_product_copy = (counters_t *) arg;
         counters_set(running_product_copy, key, count);
     }
@@ -412,7 +444,8 @@ void copy(void *arg, const int key, const int count){
 
 /*********************************** counters_intersect() *********************/
 /* 
-* Intersects two counters
+ * Intersects two counters, where ctrs_A is thr running product counters.
+ *
 */
 static void 
 counters_intersect(counters_t *ctrs_A, counters_t *ctrs_B)
@@ -427,9 +460,10 @@ counters_intersect(counters_t *ctrs_A, counters_t *ctrs_B)
 
 
 
-/***************************** counters_intersect_helper() **********************/ 
+/***************************** counters_intersect_helper() **************************/ 
 /* 
-* Helper for counters_intersect
+ * Helper for counters_intersect
+ *
 */
 static void 
 counters_intersect_helper(void *arg, const int key, int count_A)
@@ -509,7 +543,7 @@ sort_matches(void *arg, const int docID, int myScore)
             arr[i] = this_doc;
             return;
         } 
-        i ++;
+        i++;
     }
 }
 
