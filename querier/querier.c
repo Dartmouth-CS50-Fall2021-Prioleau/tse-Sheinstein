@@ -72,7 +72,7 @@ void run_query(index_t *idx, char * directory, const char* arr[], int size);
 counters_t* counters_product (index_t *idx, const char * arr[], int curPos, 
 int * posAddress, int arr_size);
 counters_t* sum_counters (index_t *idx, const char * arr[], int size);
-
+void copy(void *arg, const int key, const int count);
 
 
 /***************************** main() ****************************************/
@@ -183,6 +183,7 @@ void process_query(index_t *idx, char * directory)
             run_query(idx, directory, extracted_words, count); 
         }
         free(line);
+        memset(extracted_words, '\0', sizeof(extracted_words));
         prompt();
 
     }
@@ -204,7 +205,7 @@ static void prompt(void)
 
 
 
-/****************************** is_satify_query() ******************************************/
+/****************************** is_satify_query() ****************************/
 /* 
 * Checks for invalid query.
  Returns true if query is valid, 
@@ -214,7 +215,7 @@ static void prompt(void)
  of query 
  *And finally, also returns false if two operators are adjacent to
  in a query.
- otherwise returns false
+ running_product_copywise returns false
 */
 bool
 is_satify_query(const char * arr[], int count)
@@ -257,9 +258,9 @@ isOperator (const char *word){
 
 
 
-/*********************************run_query() **************************************/
+/*******************************run_query() *****************************/
 /*
-* Searches for matches to the queyr tokens in given index of word:document pages,
+* Searches for matches to the query tokens in given index of word:document pages,
 * scores them and prints a list of documents in ranked order.
 */
 void
@@ -298,7 +299,7 @@ run_query(index_t *idx, char * directory, const char* arr[], int size)
 
     /////////////////////////////////////
     // print the ranked matching documents formated
-    printf("matches %d documents (ranked)\n", num_matches);
+    printf("matches %3d documents (ranked):\n", num_matches);
     for (int i = 0; i < num_matches; i ++){
         document_t *doc = ranked_list[i];
         printf("score: %3d, docID: %3d : %s\n", doc->score, doc->ID, doc->URL);
@@ -315,34 +316,6 @@ run_query(index_t *idx, char * directory, const char* arr[], int size)
     count_free(arr_and_s);
 }
 
-
-
-/***************************** counters_product() ****************************/
-/* 
-* Computes a product of counters items
-*/
-counters_t*
-counters_product (index_t *idx, const char * arr[], int pos, int * posAddress, int arr_size) {
-    const char * word = arr[pos];
-    counters_t *running_product = index_find(idx, word);
-    for (int i = pos + 1; i < arr_size; i ++){
-        word = arr[i];
-        *posAddress = i;
-        if (strcmp(word, "and") == 0){
-            continue;
-        }
-        if (strcmp(word, "or") == 0){
-            *posAddress += 1;
-            return running_product;
-        }
-        counters_intersect(running_product, index_find(idx, word));
-    }
-    *posAddress += 1;
-    return running_product;
-}
-
-
-
 /************************** sum_counters() ********************************/
 /* 
 * Computes a running sum of counters items
@@ -354,19 +327,53 @@ sum_counters (index_t *idx, const char * arr[], int size) {
     while (pos < size){
         counters_t *product = counters_product(idx, arr, pos, &pos, size);
         counters_merge(running_sum, product);
+        counters_delete(product);
+
     }
+    
     return running_sum;
+}
+
+
+
+
+/***************************** counters_product() ****************************/
+/* 
+* Computes a product of counters items
+*/
+counters_t*
+counters_product (index_t *idx, const char * arr[], int pos, int * posAddress, int arr_size) {
+    const char * word = arr[pos];
+    counters_t *running_product = index_find(idx, word);
+    counters_t* running_product_copy = counters_new();
+    counters_iterate(running_product, running_product_copy, copy);
+    for (int i = pos + 1; i < arr_size; i ++){
+        word = arr[i];
+        *posAddress = i;
+        if (strcmp(word, "and") == 0){
+            continue;
+        }
+        if (strcmp(word, "or") == 0){
+            *posAddress += 1;
+            return running_product_copy;
+        }
+        counters_intersect(running_product_copy, index_find(idx, word));
+    }
+    *posAddress += 1;
+    return running_product_copy;
 }
 
 
 
 /******************** counters_merge() *************************************/
 /* 
-* Merges two counters
+* Merges the second  counterset ctrs_B into the first counterset ctrs_A:
+* The second counterset is unchanged
 */
 static void 
 counters_merge(counters_t *ctrs_A, counters_t *ctrs_B)
-{
+{ 
+  
   counters_iterate(ctrs_B, ctrs_A, counters_merge_helper);
 }
 
@@ -375,23 +382,32 @@ counters_merge(counters_t *ctrs_A, counters_t *ctrs_B)
 /*************************** counters_merge_helper() ***********************/
 /* 
 * Helper for counters_merge
+* consider one item for insertion into the running_product_copy counterset
 */
 static void 
 counters_merge_helper(void *arg, const int key, int count_B)
 {
-  counters_t *ctrs_A = arg;
+  counters_t * ctrs_A = arg;
   
-  // find the same key in setA
+  // find the same key in setA and update the count accordingly
   int count_A = counters_get(ctrs_A, key);
   if (count_A == 0) {
     // not found: insert it
     counters_set(ctrs_A, key, count_B);
   } else {
     // add to the existing value
-    counters_set(ctrs_A, key, counters_get(ctrs_A, key) + count_B);
+    counters_set(ctrs_A, key, count_A+count_B);
   }
 }
 
+
+// make a copy of a counters struct
+void copy(void *arg, const int key, const int count){
+    if (arg != NULL){
+        counters_t *running_product_copy = (counters_t *) arg;
+        counters_set(running_product_copy, key, count);
+    }
+}
 
 
 /*********************************** counters_intersect() *********************/
@@ -400,13 +416,13 @@ counters_merge_helper(void *arg, const int key, int count_B)
 */
 static void 
 counters_intersect(counters_t *ctrs_A, counters_t *ctrs_B)
-{
+{   // make a copy of new counters ,modify that counter and nreturnh it as running total
     two_ctrs_t *two_ctrs = malloc(sizeof(two_ctrs_t));
     two_ctrs->c1 = ctrs_A;
     two_ctrs->c2 = ctrs_B;
     counters_iterate(ctrs_A, two_ctrs, counters_intersect_helper);
-    free(two_ctrs);
-  
+    count_free(two_ctrs);
+
 }
 
 
@@ -426,8 +442,8 @@ counters_intersect_helper(void *arg, const int key, int count_A)
         counters_set(two_ctrs->c1, key, 0);
     } else {
         // found the key, take the minimum
-        count_A = count_A < count_B ? count_A : count_B;
-        counters_set(two_ctrs->c1, key, count_A);
+        int count_final = count_A < count_B ? count_A : count_B;
+        counters_set(two_ctrs->c1, key, count_final);
     }
 }
 
