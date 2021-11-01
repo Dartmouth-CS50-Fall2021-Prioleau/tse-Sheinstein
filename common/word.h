@@ -31,14 +31,14 @@
 char* normalize_word(char* word); 
 
 
-/***************************** get_tokens() *******************************/
+/***************************** is_alpha_tokens() *******************************/
 /* Extracts words from a line of words and returns the number of extracted words
  * Extracts by delimeter " ", adds word to given array if word
  * comprises of only letters.
  * brekas if a word contains non-alpha character.
  */
-int 
-get_tokens(char* line, const char* arr[]);
+bool
+is_alpha_tokens(char* line, const char* arr[], int* address);
 
 
 

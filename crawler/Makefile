@@ -24,7 +24,6 @@ $(PROG): $(OBJS)
 .PHONY: test valgrind clean
 
 test:
-
 	bash testing.sh &> testing.out
 
 valgrind: $(PROG) 

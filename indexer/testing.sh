@@ -193,6 +193,38 @@ fi
 
 
 
+# indexer on toscrape  at depth 0
+echo "Testing indexer on toscrape at depth 0 file"
+./indexer ../tse-output/toscrape-depth-0/ ../tse-index-output/toscrape-index-0
+if [ $? -ne 0 ]; then
+    echo >&2 "Indexer on toscrape at depth 0 failed"
+    exit 1
+fi
+
+
+
+
+# indexer on toscrape  at depth 1
+echo "Testing indexer on toscrape at depth 1 file"
+./indexer ../tse-output/toscrape-depth-1/ ../tse-index-output/toscrape-index-1
+if [ $? -ne 0 ]; then
+    echo >&2 "Indexer on toscrape at depth 1 failed"
+    exit 1
+fi
+
+
+
+
+# indexer on toscrape  at depth 2
+echo "Testing indexer on toscrape at depth 2 file"
+./indexer ../tse-output/toscrape-depth-2/ ../tse-index-output/toscrape-index-2
+if [ $? -ne 0 ]; then
+    echo >&2 "Indexer on toscrape at depth 2 failed"
+    exit 1
+fi
+
+
+
 
 
 
@@ -444,6 +476,84 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+
+
+
+
+echo "==============================================================="
+echo "Testing indextest on toscrape at depth 0, 1, 2"
+
+
+# indextest on toscrape at depth 0
+echo "Testing indextest on toscrape at depth 0 file"
+./indextest ../tse-index-output/toscrape-index-0 ../tse-indextest-output/toscrape-index-0
+if [ $? -ne 0 ]; then
+    echo >&2 "indextest on toscrape at depth 0 failed"
+    exit 1
+fi
+
+# Comparing differences between indextest sorted output and that of with indexer sorted "
+echo "Comparing differences between indextest sorted output and that of with indexer sorted "
+# sort both files
+./indexsort.awk ../tse-index-output/toscrape-index-0 > ../tse-index-sorted/toscrape-index-0-sorted
+./indexsort.awk ../tse-indextest-output/toscrape-index-0 > ../tse-sorted-indextest/toscrape-index-0-sorted
+
+
+# compare 
+diff -qy ../tse-index-sorted/toscrape-index-0-sorted ../tse-sorted-indextest/toscrape-index-0-sorted 
+
+if [ $? -ne 0 ]; then
+    echo >&2 "toscrape depth 0 indexer and indextest files are different "
+    exit 1
+fi
+
+
+# indextest on toscrape at depth 1
+echo "Testing indextest on toscrape at depth 0 file"
+./indextest ../tse-index-output/toscrape-index-1 ../tse-indextest-output/toscrape-index-1
+if [ $? -ne 0 ]; then
+    echo >&2 "indextest on toscrape at depth 1 failed"
+    exit 1
+fi
+
+# Comparing differences between indextest sorted output and that of with indexer sorted "
+echo "Comparing differences between indextest sorted output and that of with indexer sorted "
+# sort both files
+./indexsort.awk ../tse-index-output/toscrape-index-1 > ../tse-index-sorted/toscrape-index-1-sorted
+./indexsort.awk ../tse-indextest-output/toscrape-index-1 > ../tse-sorted-indextest/toscrape-index-1-sorted
+
+
+# compare 
+diff -qy ../tse-index-sorted/toscrape-index-1-sorted ../tse-sorted-indextest/toscrape-index-1-sorted 
+
+if [ $? -ne 0 ]; then
+    echo >&2 "toscrape depth 1 indexer and indextest files are different "
+    exit 1
+fi
+
+
+# indextest on toscrape at depth 2
+echo "Testing indextest on toscrape at depth 2 file"
+./indextest ../tse-index-output/toscrape-index-2 ../tse-indextest-output/toscrape-index-2
+if [ $? -ne 0 ]; then
+    echo >&2 "indextest on toscrape at depth 2 failed"
+    exit 1
+fi
+
+# Comparing differences between indextest sorted output and that of with indexer sorted "
+echo "Comparing differences between indextest sorted output and that of with indexer sorted "
+# sort both files
+./indexsort.awk ../tse-index-output/toscrape-index-2 > ../tse-index-sorted/toscrape-index-2-sorted
+./indexsort.awk ../tse-indextest-output/toscrape-index-2 > ../tse-sorted-indextest/toscrape-index-2-sorted
+
+
+# compare 
+diff -qy ../tse-index-sorted/toscrape-index-2-sorted ../tse-sorted-indextest/toscrape-index-2-sorted 
+
+if [ $? -ne 0 ]; then
+    echo >&2 "toscrape depth 2 indexer and indextest files are different "
+    exit 1
+fi
 
 echo "=============================================================="
 echo "================== End of testing.sh =================="

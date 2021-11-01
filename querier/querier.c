@@ -222,25 +222,24 @@ void process_query(index_t *idx, char * directory)
     prompt(); // request query if a tty
 
     char* line; 
-    while((line = freadlinep(stdin)) != NULL){
-     
-        int count  = get_tokens(line, extracted_words);
+    //bool success = false; //determines if  query should run
 
-        if((count > 0) && (is_satify_query(extracted_words, count)))
+    while((line = freadlinep(stdin)) != NULL){
+        int num_words;
+        bool words_status  = is_alpha_tokens(line, extracted_words, &num_words); //determines if  query should run
+
+        if((words_status == true) && (num_words > 0) && (is_satify_query(extracted_words, num_words)))
         {    
             printf("query: ");
-            for (int i = 0; i < count; i ++){
+            for (int i = 0; i < num_words; i ++){
                 printf(" %s", extracted_words[i]);
             }
             printf("\n");
 
             //run the query
-            run_query(idx, directory, extracted_words, count); 
+            run_query(idx, directory, extracted_words, num_words); 
         }
-        //else{
-            //printf(stderr, "Could not run query on input");
-            //return ;
-       // }
+        
         free(line);
         memset(extracted_words, '\0', sizeof(extracted_words));
         prompt();

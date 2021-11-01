@@ -1,8 +1,8 @@
-# Salifyanjin J Namwila
-## CS50 Fall 2021, Lab 5: TSE Cralwer Testing
+# Salifyanji J Namwila
+## CS50 Fall 2021, Lab 5: TSE Indexer Testing
 
 ### Testing
-Indexer  is tested by running `testing.sh` (integration testing from the command line after indexer has been assemlbed. `testing.sh` tests the indexer's response to inv;aid arguments, an incorrect number of arguments, valid page directories and non existent pagedirectories. To confirm that indexer has indexed the files successfully, `testing.sh` checks if the output index files' contents match with outputs on in the path `1/thayerfs/courses/21fall/cosc050.02/workspace/cs50tse/tse-output`, if user is on  dartmouth thayer school plank and ` http://cs50tse.cs.dartmouth.edu/tse-output/` the official website rep for all outputs.
+Indexer  is tested by running `testing.sh` (integration testing from the command line after indexer has been assemlbed. `testing.sh` tests the indexer's response to invalid arguments, an incorrect number of arguments, valid page directories and non existent pagedirectories. To confirm that indexer has indexed the files successfully, `testing.sh` checks if the output index files' contents match with outputs on in the path `1/thayerfs/courses/21fall/cosc050.02/workspace/cs50tse/tse-output`, if user is on  dartmouth thayer school plank and ` http://cs50tse.cs.dartmouth.edu/tse-output/` the official website rep for all outputs.
 
 To ensure that indexer is doing following the right steps in producing the index, `indexer` prints the following progress indicators :
 1. Building index..

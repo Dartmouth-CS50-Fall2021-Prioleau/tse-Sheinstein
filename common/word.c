@@ -32,8 +32,8 @@ char* normalize_word(char* word)
 /* see words.h for description
  */
 
-int 
-get_tokens(char* line, const char* arr[])
+bool
+is_alpha_tokens(char* line, const char* arr[], int* address)
  {
 
      int word_count = 0;
@@ -43,16 +43,16 @@ get_tokens(char* line, const char* arr[])
     
      while (word != NULL){
          if(is_Alpha(word)){
-            arr[word_count] = word;
-            //printf("extracted words is %s\n", word);
+            arr[word_count] = normalize_word(word);
             word = strtok(NULL, " ");
             word_count++;
          }
-         else break;
+         else return false;
      }
-     return word_count;
- }
 
+     *address = word_count;
+     return true;
+ }
 
 /*************************** is_Alpha() ***************************/
 /* Returns true if given character contains only letters

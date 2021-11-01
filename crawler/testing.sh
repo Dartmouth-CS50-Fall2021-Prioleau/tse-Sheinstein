@@ -355,7 +355,7 @@ ls ../tse-output/wikipedia-depth-1/ | wc -l
 mkdir ../tse-output/wikipedia-depth-2
 
  echo "Testing crawler on wikipedia html file at depth 2"
-echo "Expect 1675 file from Wikipedia html at Depth 2."
+echo "Expect 1673 file from Wikipedia html at Depth 2."
  ./crawler http://cs50tse.cs.dartmouth.edu/tse/wikipedia/index.html ../tse-output/wikipedia-depth-2 2
  if [ $? -ne 0 ]; then
     echo >&2 "Error Failed test on wikipedia html at Depth 2"
