@@ -1,0 +1,1995 @@
+#!/bin/bash
+# testing.sh -- testing file for querier
+# Usage: make test
+# Input: none
+# Output: Testing results, see testing.out for more specific results
+#Verification Method: "Manual verification of files -- output matches indexer file count of corresponding query expectations"
+#
+# Author: Salifyanji J Namwila October 31 2021
+# CS50 Fall 2021.
+# Based on testing script by Temi Prioleau
+# Feb 5, 2020
+#
+#QUERIER ARGUMENTS: ./querier pageDirectory indexFilename
+#example: ./querier   ../tse-output/letters-depth-2  ../tse-index-output/letters-index-2
+
+
+
+chmod +x testing.sh # change mode of .out file to executable
+
+
+#  make parent directory outside cralwer to hold all new directories made in this test
+mkdir ../tse-querier-output
+mkdir: ../tse-querier-output: File exists
+
+make
+make[1]: Nothing to be done for `all'.
+
+# argumet validation file
+
+mkdir ../tse-querier-output/notCrawlerProduced
+mkdir: ../tse-querier-output/notCrawlerProduced: File exists
+
+echo "====================================================================================="
+=====================================================================================
+
+echo "Integration testing for querier module."
+Integration testing for querier module.
+echo "IMPORTANT: ensure you have tse-output and tse-index-output loaded before running the script."
+IMPORTANT: ensure you have tse-output and tse-index-output loaded before running the script.
+echo "For details on how to loaded tse-output and tse-index-output, please see the general README."
+For details on how to loaded tse-output and tse-index-output, please see the general README.
+echo "Currently using -DTEST flag to see progress indicators (e.g. current file ID)."
+Currently using -DTEST flag to see progress indicators (e.g. current file ID).
+echo "(Comment out for brevity, see Makefile in common to delete the flag)"
+(Comment out for brevity, see Makefile in common to delete the flag)
+echo "Use valgrind to check for memory leaks"
+Use valgrind to check for memory leaks
+
+echo "====================================================================================="
+=====================================================================================
+
+#************************************* various Querier commandline arguments testing block ************************************#
+### The tests cases defined in this block should  all fail ###
+echo "Section 0: Testing: Parameter Checks"
+Section 0: Testing: Parameter Checks
+
+echo "Testing querier (error-handling)"
+Testing querier (error-handling)
+
+
+# 2 arguments
+echo "Error handling: Insufficient arguments"
+Error handling: Insufficient arguments
+./querier ../tse-output/toscrape-depth-0
+Usage: ./querier pageDirectory indexFilename
+if [ $? -ne 0 ]; then
+    echo >&2 "Error caught: Insufficient arguments provided"
+
+fi
+Error caught: Insufficient arguments provided
+
+# 4 arguments
+echo "Error handling: Too many arguments"
+Error handling: Too many arguments
+./querier ../tse-output/letters-depth-0 ../tse-index-output/wikipedia-index-0 ../tse-index-output/wikipedia-index-1
+Usage: ./querier pageDirectory indexFilename
+if [ $? -ne 0 ]; then
+    echo >&2 "Error caught: Too many arguments provided"
+
+fi
+Error caught: Too many arguments provided
+
+
+
+# invalid pagedirectory (not crawler-produced)
+echo "Error handling: Testing indexer on invalid pagedirectory (not crawler-produced)"
+Error handling: Testing indexer on invalid pagedirectory (not crawler-produced)
+./querier ../tse-querier-output/notCrawlerProduced ../tse-index-output/letters-index-0
+ Cannot verify whether directory Crawler
+pageDirectory is not an existing directory produced by the crawler
+if [ $? -ne 0 ]; then
+    echo >&2 "Error caught: Indexer requires a crawler-produced directory"
+
+fi
+Error caught: Indexer requires a crawler-produced directory
+
+# invalid pagedirectory (non-existent)
+echo "Error-handling: Testing crawler on invalid pagedirectory (non-existent)"
+Error-handling: Testing crawler on invalid pagedirectory (non-existent)
+./querier ../tse-output-not-exist/ ../tse-index-output/letters-index-0
+ Cannot verify whether directory Crawler
+pageDirectory is not an existing directory produced by the crawler
+if [ $? -eq 0 ]; then
+    echo >&2 "Error caught: Indexer ignores a non-existent pagedirectory"
+
+fi
+
+# make invalid directory (no read permission)
+mkdir ../tse-querier-output/notReadable
+mkdir: ../tse-querier-output/notReadable: File exists
+chmod -r ../tse-querier-output/notReadable
+
+echo "Error-handling: Testing indexer on invalid directory (no read permission)"
+Error-handling: Testing indexer on invalid directory (no read permission)
+./querier ../tse-output/letters-depth-0 ../tse-querier-output/notReadable/letters-index-0
+indexFilename is not a readable file
+if [ $? -ne 0 ]; then
+    echo >&2 "Error caught: Directory must be Readable"
+
+fi
+Error caught: Directory must be Readable
+
+# good practice to change directory back to readable
+chmod +r ../tse-querier-output/notReadable
+
+
+#*****************************************Query Input cases testing block **********************************#
+echo "====================================================================================="
+=====================================================================================
+
+# The tests cases defined in this block should  all pass ###
+echo " Section 1 Testing: Indexing letters, toscrape and wikipedia crawler produced directories  "
+ Section 1 Testing: Indexing letters, toscrape and wikipedia crawler produced directories  
+
+echo "Testing indexer on letters at depth 0, 1, 2, 3, 4, 5, 6"
+Testing indexer on letters at depth 0, 1, 2, 3, 4, 5, 6
+
+
+
+echo "=========================================================="
+==========================================================
+echo "Testing querier on edge cases for letters at depth 6" 
+Testing querier on edge cases for letters at depth 6
+
+echo "Testing querier on empty query"
+Testing querier on empty query
+echo "" | ./querier ../tse-output/letters-depth-3 ../tse-index-output/letters-index-3
+Loading index...
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -eq 0 ]; then
+    echo >&2 "Error-handling: Querier does nothing and continues on empty query"
+fi
+Error-handling: Querier does nothing and continues on empty query
+
+# Testing querier on whitespace
+echo "Testing querier on whitespace"
+Testing querier on whitespace
+echo "   " | ./querier ../tse-output/letters-depth-3 ../tse-index-output/letters-index-3
+Loading index...
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -eq 0 ]; then
+    echo >&2 "Error-handling: Querier does nothing and continues on query of only whitespace"
+fi
+Error-handling: Querier does nothing and continues on query of only whitespace
+
+# Testing querier with a starting operator
+echo "Testing querier with a starting operator"
+Testing querier with a starting operator
+echo "and computational" | ./querier ../tse-output/letters-depth-3 ../tse-index-output/letters-index-3
+Loading index...
+Error: the word and cannot be first 
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -eq 0 ]; then
+    echo >&2 "Error-handling: Querier does not allow AND to be first in the query"
+fi
+Error-handling: Querier does not allow AND to be first in the query
+
+echo "or search" | ./querier ../tse-output/letters-depth-3 ../tse-index-output/letters-index-3
+Loading index...
+Error: the word or cannot be first 
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -eq 0 ]; then
+    echo >&2 "Error-handling: Querier does not allow OR to be first in the query"
+fi
+Error-handling: Querier does not allow OR to be first in the query
+
+# Testing querier with an ending operator
+echo "Testing querier with an ending operator"
+Testing querier with an ending operator
+echo "computational and" | ./querier ../tse-output/letters-depth-3 ../tse-index-output/letters-index-3
+Loading index...
+Error: the word and cannot be last 
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -eq 0 ]; then
+    echo >&2 "Error-handling: Querier does not allow AND to be last in the query"
+fi
+Error-handling: Querier does not allow AND to be last in the query
+
+echo "search or" | ./querier ../tse-output/letters-depth-3 ../tse-index-output/letters-index-3
+Loading index...
+Error: the word or cannot be last 
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -eq 0 ]; then
+    echo >&2 "Error-handling: Querier does not allow OR to be last in the query"
+fi
+Error-handling: Querier does not allow OR to be last in the query
+
+
+
+# ************************************* Testing querier with consecutive operators ******************************** "
+echo "====================================================================================="
+=====================================================================================
+echo" ********** Testing querier with consecutive operators ************** "
+testing.sh: line 151: echo ********** Testing querier with consecutive operators ************** : command not found
+
+#  Testing querier with consecutive operators
+echo "Testing querier with consecutive operators"
+Testing querier with consecutive operators
+echo "home or and eniac" | ./querier ../tse-output/letters-depth-3 ../tse-index-output/letters-index-3
+Loading index...
+Error: cannot have two consecutive operators
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -eq 0 ]; then
+    echo >&2 "Error-handling: Querier does not allow AND and OR to be consecutive"
+fi
+Error-handling: Querier does not allow AND and OR to be consecutive
+
+echo "page or or eniac" | ./querier ../tse-output/letters-depth-3 ../tse-index-output/letters-index-3
+Loading index...
+Error: cannot have two consecutive operators
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -eq 0 ]; then
+    echo >&2 "Error-handling: Querier does not allow AND and AND to be consecutive"
+fi
+Error-handling: Querier does not allow AND and AND to be consecutive
+
+echo "breadth and and first" | ./querier ../tse-output/letters-depth-3 ../tse-index-output/letters-index-3
+Loading index...
+Error: cannot have two consecutive operators
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -eq 0 ]; then
+    echo >&2 "Error-handling: Querier does not allow OR and OR to be consecutive"
+fi
+Error-handling: Querier does not allow OR and OR to be consecutive
+
+echo "algorithm  biology and or " | ./querier ../tse-output/letters-depth-3 ../tse-index-output/letters-index-3
+Loading index...
+Error: the word or cannot be last 
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -eq 0 ]; then
+    echo >&2 "Error-handling: Querier does not allow OR and AND to be consecutive"
+fi
+Error-handling: Querier does not allow OR and AND to be consecutive
+
+# ************************************* Testing querier with uppercase query inputs and space variations *************************************"
+echo "====================================================================================="
+=====================================================================================
+echo" *****Testing querier with uppercase query inputs and space variations ********"
+testing.sh: line 177: echo *****Testing querier with uppercase query inputs and space variations ********: command not found
+
+#  Testing querier with uppercase query inputs
+echo " Testing querier with uppercase query inputs"
+ Testing querier with uppercase query inputs
+echo "DEPTH AND eniac" | ./querier ../tse-output/letters-depth-3 ../tse-index-output/letters-index-3
+Loading index...
+query:  depth and eniac
+no matches
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -eq 0 ]; then
+    echo >&2 "Error-handling: Querier does not allow AND and OR to be consecutive"
+fi
+Error-handling: Querier does not allow AND and OR to be consecutive
+
+
+#  Testing querier with uppercase query inputs and  a lot of spaces
+echo " Testing querier with uppercase query inputs and  a lot of spaces"
+ Testing querier with uppercase query inputs and  a lot of spaces
+echo "     DEPTH     OR        eniac         " | ./querier ../tse-output/letters-depth-3 ../tse-index-output/letters-index-3
+Loading index...
+query:  depth or eniac
+matches   2 documents (ranked):
+score:   1, docID:   4 : http://cs50tse.cs.dartmouth.edu/tse/letters/E.html
+score:   1, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/letters/D.html
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -eq 0 ]; then
+    echo >&2 "Error-handling: Querier does not allow AND and OR to be consecutive"
+fi
+Error-handling: Querier does not allow AND and OR to be consecutive
+
+
+
+#  Testing querier with uppercase query inputs and  a lot of spaces and implicit and sequences
+echo " Testing querier with uppercase query inputs and  a lot of spaces and implicit and sequences"
+ Testing querier with uppercase query inputs and  a lot of spaces and implicit and sequences
+echo "     DEPTH     OR        eniac    ALGORITHM       " | ./querier ../tse-output/letters-depth-3 ../tse-index-output/letters-index-3
+Loading index...
+query:  depth or eniac algorithm
+matches   1 documents (ranked):
+score:   1, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/letters/D.html
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -eq 0 ]; then
+    echo >&2 "Error-handling: Querier does not allow AND and OR to be consecutive"
+fi
+Error-handling: Querier does not allow AND and OR to be consecutive
+
+
+
+#  Testing querier with uppercase query inputs and  a lot of spaces before and after words and implicit andsequences
+echo " Testing querier with uppercase query inputs and  a lot of spaces before and after words and implicit andsequences"
+ Testing querier with uppercase query inputs and  a lot of spaces before and after words and implicit andsequences
+echo "    DEPTH FIRST SEARCH  " | ./querier ../tse-output/letters-depth-3 ../tse-index-output/letters-index-3
+Loading index...
+query:  depth first search
+matches   1 documents (ranked):
+score:   1, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/letters/D.html
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -eq 0 ]; then
+    echo >&2 "Error-handling: Querier does not allow AND and OR to be consecutive"
+fi
+Error-handling: Querier does not allow AND and OR to be consecutive
+
+
+# Testing querier on words not in index file
+echo "Testing querier on words not in  index file"
+Testing querier on words not in  index file
+echo "   computer or  science  and dartmouth  " | ./querier ../tse-output/letters-depth-3 ../tse-index-output/letters-index-3 
+Loading index...
+query:  computer or science and dartmouth
+no matches
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -eq 0 ]; then
+    echo >&2 "Error-handling: Querier returns 'No documents match.' for words it cannot find."
+fi
+Error-handling: Querier returns 'No documents match.' for words it cannot find.
+
+
+
+# ************************************************* Testing non-letter characters ********************************************
+echo "====================================================================================="
+=====================================================================================
+ echo" ******* Testing  querier on non-letter characters ***********"
+testing.sh: line 224: echo ******* Testing  querier on non-letter characters ***********: command not found
+
+# Testing querier on non-letter characters
+
+# non- letter starting query
+echo "Testing querier on non-letter characters: non- letter starting query"
+Testing querier on non-letter characters: non- letter starting query
+echo " 4 enaic  or breadth " | ./querier ../tse-output/letters-depth-3 ../tse-index-output/letters-index-3 
+Error: bad character '4' in query.
+Loading index...
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -eq 0 ]; then
+    echo >&2 "Error-handling: Querier does not allow non-letter characters."
+fi
+Error-handling: Querier does not allow non-letter characters.
+
+# non- letter middle of  query
+echo "Testing querier on non-letter characters: non- letter middle of query"
+Testing querier on non-letter characters: non- letter middle of query
+echo " enaic 5 6  or biology  breadth " | ./querier ../tse-output/letters-depth-3 ../tse-index-output/letters-index-3 
+Error: bad character '5' in query.
+Loading index...
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -eq 0 ]; then
+    echo >&2 "Error-handling: Querier does not allow non-letter characters."
+fi
+Error-handling: Querier does not allow non-letter characters.
+
+# non- letter end  of  query
+echo "Testing querier on non-letter characters: non- letter end  of query"
+Testing querier on non-letter characters: non- letter end  of query
+echo " enaic or biology  or breadth " | ./querier ../tse-output/letters-depth-3 ../tse-index-output/letters-index-3 
+Loading index...
+query:  enaic or biology or breadth
+matches   2 documents (ranked):
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/letters/B.html
+score:   1, docID:   6 : http://cs50tse.cs.dartmouth.edu/tse/letters/C.html
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -eq 0 ]; then
+    echo >&2 "Error-handling: Querier does not allow non-letter characters."
+fi
+Error-handling: Querier does not allow non-letter characters.
+
+#*****************************************Regular(valid) cases testing block **********************************
+echo "====================================================================================="
+=====================================================================================
+echo " ================= Regular(valid) cases testing block ================"
+ ================= Regular(valid) cases testing block ================
+
+echo "================== fuzzquery testing ================================="
+================== fuzzquery testing =================================
+# The tests cases defined in this block should  all pass
+echo " Section 2 Testing: Indexing letters, toscrape and wikipedia crawler produced directories  "
+ Section 2 Testing: Indexing letters, toscrape and wikipedia crawler produced directories  
+
+echo "Testing indexer on letters at depth 0, 1, 2, 3, 4"
+Testing indexer on letters at depth 0, 1, 2, 3, 4
+
+# fuzz query letters test 
+#  fuzz query letters depth 0
+echo "======================================================================="
+=======================================================================
+echo "Querier tests on letters at depth 0"
+Querier tests on letters at depth 0
+
+
+
+# fuzz query letters depth 1
+echo "Testing querier on letters at depth 0" 
+Testing querier on letters at depth 0
+./fuzzquery ../tse-index-output/letters-index-0 30 7  | ./querier ../tse-output/letters-depth-0 ../tse-index-output/letters-index-0 
+./fuzzquery: generating 30 queries from 7 words
+Loading index...
+query:  home the the preinhabitation
+no matches
+-----------------------------------------------------------------------------------
+query:  for or for
+matches   1 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  tse playground or this
+matches   1 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  the
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  home and erlking and this and for
+no matches
+-----------------------------------------------------------------------------------
+query:  this or airtight or page and the and for playground
+matches   1 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  tse for for
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  tse phyllocyanic riffraff this and lecythid pneumatosis
+no matches
+-----------------------------------------------------------------------------------
+query:  this or the or hatable and tse the
+matches   1 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  page for for hacked or quinquatria
+no matches
+-----------------------------------------------------------------------------------
+query:  tse ahankara
+no matches
+-----------------------------------------------------------------------------------
+query:  this
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  this playground or cultrirostres
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  myrabalanus or nepionic or engulf home tse page
+no matches
+-----------------------------------------------------------------------------------
+query:  tse stockwright and the or playground
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  for or for playground the
+matches   1 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  the or for or playground home and home
+matches   1 documents (ranked):
+score:   3, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  page tse
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  for or playground for or the
+matches   1 documents (ranked):
+score:   3, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  page playground or aliturgic this specificate this
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  page this or isiac
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  playground or for and for or home home
+matches   1 documents (ranked):
+score:   4, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  for this page or the and tse this
+matches   1 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  superincomprehensible and this or preboast
+no matches
+-----------------------------------------------------------------------------------
+query:  home or the and couter reappropriate
+matches   1 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  home macrophagus playground and home the
+no matches
+-----------------------------------------------------------------------------------
+query:  the and page and belamcanda this or this
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  playground sabora or playground the this
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  home
+matches   1 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  this the onomatopoesy
+no matches
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -ne 0 ]; then
+    echo >&2 "Querier failed on letters at depth 0."
+    exit 1
+fi
+
+
+# fuzz query letters depth 1
+echo "Testing querier on letters at depth 1" 
+Testing querier on letters at depth 1
+./fuzzquery ../tse-index-output/letters-index-1 30 77  | ./querier ../tse-output/letters-depth-1 ../tse-index-output/letters-index-1 
+./fuzzquery: generating 30 queries from 8 words
+Loading index...
+query:  for this and for
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  bonnibel playground for the
+no matches
+-----------------------------------------------------------------------------------
+query:  this tapiroid or algorithm and page tse this
+no matches
+-----------------------------------------------------------------------------------
+query:  algorithm or tse tse home
+matches   2 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+-----------------------------------------------------------------------------------
+query:  playground page or page or home anisomyodian or ragseller
+matches   1 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  for
+matches   2 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+-----------------------------------------------------------------------------------
+query:  this or millioctave page home goudy or home
+matches   2 documents (ranked):
+score:   3, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+-----------------------------------------------------------------------------------
+query:  home this
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  home or this or the and algorithm this algorithm
+matches   2 documents (ranked):
+score:   3, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+-----------------------------------------------------------------------------------
+query:  this and for and algorithm
+no matches
+-----------------------------------------------------------------------------------
+query:  prepared page this this or algorithm or playground
+matches   2 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+-----------------------------------------------------------------------------------
+query:  ungorge playground playground page or playground
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  the carnalness or tse or for or algorithm tse
+matches   2 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+-----------------------------------------------------------------------------------
+query:  genecological or home
+matches   2 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+-----------------------------------------------------------------------------------
+query:  noctivagant uncircumspection page or unendurably or prionine tse
+no matches
+-----------------------------------------------------------------------------------
+query:  home this amplificator and playground aurorium hysterolith
+no matches
+-----------------------------------------------------------------------------------
+query:  for for the
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  unprophetically or home and home ceremony tse
+no matches
+-----------------------------------------------------------------------------------
+query:  meconin algorithm
+no matches
+-----------------------------------------------------------------------------------
+query:  algorithm for or page page this
+matches   2 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+-----------------------------------------------------------------------------------
+query:  home or this for
+matches   2 documents (ranked):
+score:   3, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+-----------------------------------------------------------------------------------
+query:  tse or algorithm algorithm or algorithm algorithm holden
+matches   2 documents (ranked):
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  this or cockbell
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  sedate tse home playground or playground tse
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  page for tse playground for and home
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  playground tse hushel
+no matches
+-----------------------------------------------------------------------------------
+query:  tse or tse home algorithm or the
+matches   1 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  algorithm page or algorithm
+matches   1 documents (ranked):
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+-----------------------------------------------------------------------------------
+query:  playground and home or playground or rejuvenate and home page
+matches   1 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  this or tse playground tse
+matches   1 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -ne 0 ]; then
+    echo >&2 "Querier failed on letters at depth 1."
+    exit 1
+fi
+
+# fuzz query letters depth 2
+echo "Testing querier on letters at depth 2" 
+Testing querier on letters at depth 2
+./fuzzquery ../tse-index-output/letters-index-2 30 777  | ./querier ../tse-output/letters-depth-2 ../tse-index-output/letters-index-2
+./fuzzquery: generating 30 queries from 11 words
+Loading index...
+query:  colback or saliaric this quintary and semimild for
+no matches
+-----------------------------------------------------------------------------------
+query:  algorithm page and algorithm or this kumquat
+no matches
+-----------------------------------------------------------------------------------
+query:  search radioteria or tse
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  playground
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  page or nonnotification
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  algorithm or buoyance and haulback
+matches   1 documents (ranked):
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+-----------------------------------------------------------------------------------
+query:  playground first or playground
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  the or search breadth breadth
+matches   2 documents (ranked):
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/letters/B.html
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  algorithm predestinationism this or this or page home
+matches   1 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  tse for and for page search this
+no matches
+-----------------------------------------------------------------------------------
+query:  scudo or algorithm
+matches   1 documents (ranked):
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+-----------------------------------------------------------------------------------
+query:  the and tse or isostemony and breadth first
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  the or algorithm
+matches   2 documents (ranked):
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  first or home or trouter and algorithm or the or playground
+matches   3 documents (ranked):
+score:   4, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+score:   2, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/letters/B.html
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+-----------------------------------------------------------------------------------
+query:  sartage playground unkoshered search the
+no matches
+-----------------------------------------------------------------------------------
+query:  playground stevedorage bysacki
+no matches
+-----------------------------------------------------------------------------------
+query:  schindylesis and this or search
+matches   1 documents (ranked):
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/letters/B.html
+-----------------------------------------------------------------------------------
+query:  the
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  playground redemptor page
+no matches
+-----------------------------------------------------------------------------------
+query:  for and first or playground search breadth
+matches   1 documents (ranked):
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/letters/B.html
+-----------------------------------------------------------------------------------
+query:  icon or corbeling and playground or playground
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  breadth smily breadth or credulity or playground
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  this and playground playground or for this
+matches   1 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  kaisership and breadth
+no matches
+-----------------------------------------------------------------------------------
+query:  breadth breadth and first
+matches   1 documents (ranked):
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/letters/B.html
+-----------------------------------------------------------------------------------
+query:  first or tse playground and tse
+matches   2 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/letters/B.html
+-----------------------------------------------------------------------------------
+query:  for breadth breadth ordination
+no matches
+-----------------------------------------------------------------------------------
+query:  breadth hypertypic
+no matches
+-----------------------------------------------------------------------------------
+query:  the first
+no matches
+-----------------------------------------------------------------------------------
+query:  paternalist cistae or the page
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -ne 0 ]; then
+    echo >&2 "Querier failed on letters at depth 2."
+    exit 1
+fi
+
+
+# fuzz query letters depth 3
+echo "Testing querier on letters at depth 3" 
+Testing querier on letters at depth 3
+./fuzzquery ../tse-index-output/letters-index-3 30 7777  | ./querier ../tse-output/letters-depth-3 ../tse-index-output/letters-index-3 
+./fuzzquery: generating 30 queries from 15 words
+Loading index...
+query:  breadth first and the playground or cenacle
+no matches
+-----------------------------------------------------------------------------------
+query:  the and for
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  page or computational palsification or antiblue
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  demoniast tse
+no matches
+-----------------------------------------------------------------------------------
+query:  home and biology and playground or cystatrophy
+no matches
+-----------------------------------------------------------------------------------
+query:  biology and dyserethisia tse or myxopodous
+no matches
+-----------------------------------------------------------------------------------
+query:  search first computational eniac the
+no matches
+-----------------------------------------------------------------------------------
+query:  tse or page and this and playground
+matches   1 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  gliosis
+no matches
+-----------------------------------------------------------------------------------
+query:  tse or home biology page tse tse
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  tse biology
+no matches
+-----------------------------------------------------------------------------------
+query:  home
+matches   6 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/letters/B.html
+score:   1, docID:   4 : http://cs50tse.cs.dartmouth.edu/tse/letters/E.html
+score:   1, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/letters/D.html
+score:   1, docID:   6 : http://cs50tse.cs.dartmouth.edu/tse/letters/C.html
+-----------------------------------------------------------------------------------
+query:  tse or biology or eczematoid and breadth
+matches   2 documents (ranked):
+score:   1, docID:   6 : http://cs50tse.cs.dartmouth.edu/tse/letters/C.html
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  playground shuffling and for
+no matches
+-----------------------------------------------------------------------------------
+query:  breadth tse or home and eniac
+matches   1 documents (ranked):
+score:   1, docID:   4 : http://cs50tse.cs.dartmouth.edu/tse/letters/E.html
+-----------------------------------------------------------------------------------
+query:  the or depth or eniac first this this
+matches   2 documents (ranked):
+score:   1, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/letters/D.html
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  the breadth and unbreathed depth
+no matches
+-----------------------------------------------------------------------------------
+query:  first or the and depth
+matches   2 documents (ranked):
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/letters/B.html
+score:   1, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/letters/D.html
+-----------------------------------------------------------------------------------
+query:  page or codding
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  computational or playground breadth
+matches   1 documents (ranked):
+score:   1, docID:   6 : http://cs50tse.cs.dartmouth.edu/tse/letters/C.html
+-----------------------------------------------------------------------------------
+query:  breadth
+matches   1 documents (ranked):
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/letters/B.html
+-----------------------------------------------------------------------------------
+query:  mesoblast search this or first
+matches   2 documents (ranked):
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/letters/B.html
+score:   1, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/letters/D.html
+-----------------------------------------------------------------------------------
+query:  tse for and page or pulex or search
+matches   3 documents (ranked):
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/letters/B.html
+score:   1, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/letters/D.html
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  computational
+matches   1 documents (ranked):
+score:   1, docID:   6 : http://cs50tse.cs.dartmouth.edu/tse/letters/C.html
+-----------------------------------------------------------------------------------
+query:  computational computational algorithm
+no matches
+-----------------------------------------------------------------------------------
+query:  algorithm
+matches   1 documents (ranked):
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+-----------------------------------------------------------------------------------
+query:  algorithm
+matches   1 documents (ranked):
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+-----------------------------------------------------------------------------------
+query:  the and reincentive breadth
+no matches
+-----------------------------------------------------------------------------------
+query:  for
+matches   6 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/letters/B.html
+score:   1, docID:   4 : http://cs50tse.cs.dartmouth.edu/tse/letters/E.html
+score:   1, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/letters/D.html
+score:   1, docID:   6 : http://cs50tse.cs.dartmouth.edu/tse/letters/C.html
+-----------------------------------------------------------------------------------
+query:  computational and depth page
+no matches
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -ne 0 ]; then
+    echo >&2 "Querier failed on letters at depth 3."
+    exit 1
+fi
+
+
+#fuzz query  letters depth 4
+echo "Testing querier on letters at depth 4" 
+Testing querier on letters at depth 4
+./fuzzquery ../tse-index-output/letters-index-4 30 9  | ./querier ../tse-output/letters-depth-4 ../tse-index-output/letters-index-4 
+./fuzzquery: generating 30 queries from 20 words
+Loading index...
+query:  depth and graph
+no matches
+-----------------------------------------------------------------------------------
+query:  this traversal first
+no matches
+-----------------------------------------------------------------------------------
+query:  matthew or depth depth home for or traversal
+matches   2 documents (ranked):
+score:   1, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/letters/G.html
+score:   1, docID:   7 : http://cs50tse.cs.dartmouth.edu/tse/letters/D.html
+-----------------------------------------------------------------------------------
+query:  eniac and fast and graph and acanthocephalan
+no matches
+-----------------------------------------------------------------------------------
+query:  traversal or sigillarid
+matches   1 documents (ranked):
+score:   1, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/letters/G.html
+-----------------------------------------------------------------------------------
+query:  eniac and chronocinematography or this or computational page
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  fast biology and tse depth cuorin
+no matches
+-----------------------------------------------------------------------------------
+query:  the or breadth the semimythical and traversal tse
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  eniac search page or home
+matches   8 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/letters/B.html
+score:   1, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/letters/G.html
+score:   1, docID:   6 : http://cs50tse.cs.dartmouth.edu/tse/letters/F.html
+score:   1, docID:   7 : http://cs50tse.cs.dartmouth.edu/tse/letters/D.html
+score:   1, docID:   8 : http://cs50tse.cs.dartmouth.edu/tse/letters/C.html
+score:   1, docID:   4 : http://cs50tse.cs.dartmouth.edu/tse/letters/E.html
+-----------------------------------------------------------------------------------
+query:  page this or the for tse
+matches   1 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  graph birthright
+no matches
+-----------------------------------------------------------------------------------
+query:  first or search tse
+matches   2 documents (ranked):
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/letters/B.html
+score:   1, docID:   7 : http://cs50tse.cs.dartmouth.edu/tse/letters/D.html
+-----------------------------------------------------------------------------------
+query:  teetotaler
+no matches
+-----------------------------------------------------------------------------------
+query:  algorithm or codiaeum and tse transform
+matches   1 documents (ranked):
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+-----------------------------------------------------------------------------------
+query:  computational or computational
+matches   1 documents (ranked):
+score:   2, docID:   8 : http://cs50tse.cs.dartmouth.edu/tse/letters/C.html
+-----------------------------------------------------------------------------------
+query:  synodontid search breadth and traversal or first fourier
+no matches
+-----------------------------------------------------------------------------------
+query:  home first
+matches   2 documents (ranked):
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/letters/B.html
+score:   1, docID:   7 : http://cs50tse.cs.dartmouth.edu/tse/letters/D.html
+-----------------------------------------------------------------------------------
+query:  this or this and depth fast this
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  first tse or graph and home
+matches   1 documents (ranked):
+score:   1, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/letters/G.html
+-----------------------------------------------------------------------------------
+query:  for
+matches   8 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/letters/B.html
+score:   1, docID:   4 : http://cs50tse.cs.dartmouth.edu/tse/letters/E.html
+score:   1, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/letters/G.html
+score:   1, docID:   6 : http://cs50tse.cs.dartmouth.edu/tse/letters/F.html
+score:   1, docID:   7 : http://cs50tse.cs.dartmouth.edu/tse/letters/D.html
+score:   1, docID:   8 : http://cs50tse.cs.dartmouth.edu/tse/letters/C.html
+-----------------------------------------------------------------------------------
+query:  eniac and breadth
+no matches
+-----------------------------------------------------------------------------------
+query:  home
+matches   8 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/letters/B.html
+score:   1, docID:   4 : http://cs50tse.cs.dartmouth.edu/tse/letters/E.html
+score:   1, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/letters/G.html
+score:   1, docID:   6 : http://cs50tse.cs.dartmouth.edu/tse/letters/F.html
+score:   1, docID:   7 : http://cs50tse.cs.dartmouth.edu/tse/letters/D.html
+score:   1, docID:   8 : http://cs50tse.cs.dartmouth.edu/tse/letters/C.html
+-----------------------------------------------------------------------------------
+query:  fourier and transform
+matches   1 documents (ranked):
+score:   1, docID:   6 : http://cs50tse.cs.dartmouth.edu/tse/letters/F.html
+-----------------------------------------------------------------------------------
+query:  biology or home or tropaeolaceae and home
+matches   8 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+score:   2, docID:   8 : http://cs50tse.cs.dartmouth.edu/tse/letters/C.html
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/letters/B.html
+score:   1, docID:   4 : http://cs50tse.cs.dartmouth.edu/tse/letters/E.html
+score:   1, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/letters/G.html
+score:   1, docID:   6 : http://cs50tse.cs.dartmouth.edu/tse/letters/F.html
+score:   1, docID:   7 : http://cs50tse.cs.dartmouth.edu/tse/letters/D.html
+-----------------------------------------------------------------------------------
+query:  breadth gastrosopher and computational or page or depth playground
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  transform or graph or heather for
+matches   2 documents (ranked):
+score:   1, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/letters/G.html
+score:   1, docID:   6 : http://cs50tse.cs.dartmouth.edu/tse/letters/F.html
+-----------------------------------------------------------------------------------
+query:  search
+matches   2 documents (ranked):
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/letters/B.html
+score:   1, docID:   7 : http://cs50tse.cs.dartmouth.edu/tse/letters/D.html
+-----------------------------------------------------------------------------------
+query:  page
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+-----------------------------------------------------------------------------------
+query:  for or home and depth
+matches   8 documents (ranked):
+score:   2, docID:   7 : http://cs50tse.cs.dartmouth.edu/tse/letters/D.html
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/letters/index.html
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/letters/A.html
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/letters/B.html
+score:   1, docID:   4 : http://cs50tse.cs.dartmouth.edu/tse/letters/E.html
+score:   1, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/letters/G.html
+score:   1, docID:   6 : http://cs50tse.cs.dartmouth.edu/tse/letters/F.html
+score:   1, docID:   8 : http://cs50tse.cs.dartmouth.edu/tse/letters/C.html
+-----------------------------------------------------------------------------------
+query:  exigent and home biology biology
+no matches
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -ne 0 ]; then
+    echo >&2 "Querier failed on letters at depth 4."
+    exit 1
+fi
+
+echo "Testing querier on letters at depth 0, 1, 2, 3, 4, Complete"
+Testing querier on letters at depth 0, 1, 2, 3, 4, Complete
+
+echo "======================================================================="
+=======================================================================
+
+# fuzz query wikipedia depths 0, 1, 2
+echo "Querier tests on wikipedia at depth 0, 1, 2"
+Querier tests on wikipedia at depth 0, 1, 2
+
+# fuzz query wikipedia depth 0
+echo "Testing querier on wikipedia at depth 0" 
+Testing querier on wikipedia at depth 0
+./fuzzquery ../tse-index-output/wikipedia-index-0 30 99 | ./querier ../tse-output/wikipedia-depth-0 ../tse-index-output/wikipedia-index-0 
+./fuzzquery: generating 30 queries from 41 words
+Loading index...
+query:  computer
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/index.html
+-----------------------------------------------------------------------------------
+query:  website and cornstook
+no matches
+-----------------------------------------------------------------------------------
+query:  middot and index
+matches   1 documents (ranked):
+score:   3, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/index.html
+-----------------------------------------------------------------------------------
+query:  design
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/index.html
+-----------------------------------------------------------------------------------
+query:  programming and list locally
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/index.html
+-----------------------------------------------------------------------------------
+query:  open college phalangida and the college
+no matches
+-----------------------------------------------------------------------------------
+query:  intraneous
+no matches
+-----------------------------------------------------------------------------------
+query:  turnpin unhushing and amp website or contributors science
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/index.html
+-----------------------------------------------------------------------------------
+query:  unrambling and tyrolienne or sumper
+no matches
+-----------------------------------------------------------------------------------
+query:  ponton and other science and open
+no matches
+-----------------------------------------------------------------------------------
+query:  offline or other and mayo and web or programming
+matches   1 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/index.html
+-----------------------------------------------------------------------------------
+Error: cannot have two consecutive operators
+-----------------------------------------------------------------------------------
+query:  locally the copier
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/index.html
+-----------------------------------------------------------------------------------
+query:  web web encyclopedia sites kauler
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/index.html
+-----------------------------------------------------------------------------------
+query:  steelboy leglessness and copy
+no matches
+-----------------------------------------------------------------------------------
+query:  free copy and list
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/index.html
+-----------------------------------------------------------------------------------
+query:  language and unwrap and copier
+no matches
+-----------------------------------------------------------------------------------
+Error: cannot have two consecutive operators
+-----------------------------------------------------------------------------------
+query:  locally
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/index.html
+-----------------------------------------------------------------------------------
+query:  language or contributors
+matches   1 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/index.html
+-----------------------------------------------------------------------------------
+query:  middot and programming mulefooted
+no matches
+-----------------------------------------------------------------------------------
+query:  amp the and made
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/index.html
+-----------------------------------------------------------------------------------
+query:  copier middot or stenophyllous unix and sites or table
+matches   1 documents (ranked):
+score:   4, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/index.html
+-----------------------------------------------------------------------------------
+query:  copy dihalo
+no matches
+-----------------------------------------------------------------------------------
+query:  index or free
+matches   1 documents (ranked):
+score:   9, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/index.html
+-----------------------------------------------------------------------------------
+query:  tinetare hash httrack and httrack
+no matches
+-----------------------------------------------------------------------------------
+query:  kauler and mirror gadroon dartmouth
+no matches
+-----------------------------------------------------------------------------------
+query:  encyclopedia
+matches   1 documents (ranked):
+score:   6, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/index.html
+-----------------------------------------------------------------------------------
+query:  contributors and encyclopedia sites ceraunophone and contributors
+no matches
+-----------------------------------------------------------------------------------
+query:  language and axiality
+no matches
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -ne 0 ]; then
+    echo >&2 "Querier failed on wikipedia at depth 0."
+    exit 1
+fi
+
+# fuzz query wikipedia depth 1
+echo "Testing querier on wikipedia at depth 1" 
+Testing querier on wikipedia at depth 1
+./fuzzquery ../tse-index-output/wikipedia-index-1 30 999 | ./querier ../tse-output/wikipedia-depth-1 ../tse-index-output/wikipedia-index-1
+./fuzzquery: generating 30 queries from 6506 words
+Loading index...
+query:  lds
+matches   1 documents (ranked):
+score:   1, docID:   4 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Dartmouth_College.html
+-----------------------------------------------------------------------------------
+query:  traditionally
+matches   2 documents (ranked):
+score:   1, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Unix.html
+score:   1, docID:   6 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/C_(programming_language).html
+-----------------------------------------------------------------------------------
+query:  memory grew epepophysis stores or strengths
+matches   1 documents (ranked):
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Linked_list.html
+-----------------------------------------------------------------------------------
+query:  landowner
+matches   1 documents (ranked):
+score:   1, docID:   4 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Dartmouth_College.html
+-----------------------------------------------------------------------------------
+query:  habitats and barbecue and wait
+no matches
+-----------------------------------------------------------------------------------
+query:  posing
+matches   1 documents (ranked):
+score:   1, docID:   4 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Dartmouth_College.html
+-----------------------------------------------------------------------------------
+query:  implicitly and logic or incapably yedidyah or insert
+matches   3 documents (ranked):
+score:   8, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Linked_list.html
+score:   3, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Hash_table.html
+score:   2, docID:   6 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/C_(programming_language).html
+-----------------------------------------------------------------------------------
+query:  spurgewort bachelor minister
+no matches
+-----------------------------------------------------------------------------------
+query:  lawsuit
+matches   2 documents (ranked):
+score:   2, docID:   4 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Dartmouth_College.html
+score:   2, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Unix.html
+-----------------------------------------------------------------------------------
+query:  koop barry
+matches   1 documents (ranked):
+score:   1, docID:   4 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Dartmouth_College.html
+-----------------------------------------------------------------------------------
+query:  device or unclear snipping
+matches   1 documents (ranked):
+score:   7, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Unix.html
+-----------------------------------------------------------------------------------
+query:  elect and networking garbage and drones flint expressed
+no matches
+-----------------------------------------------------------------------------------
+query:  despicability and klink utopianism or issue or staggers and putnam
+matches   3 documents (ranked):
+score:   2, docID:   4 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Dartmouth_College.html
+score:   2, docID:   6 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/C_(programming_language).html
+score:   2, docID:   7 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Computer_science.html
+-----------------------------------------------------------------------------------
+query:  documentary treatment neurothlipsis and gloppen qdevelop or resizing
+matches   1 documents (ranked):
+score:  20, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Hash_table.html
+-----------------------------------------------------------------------------------
+query:  gammaroid
+no matches
+-----------------------------------------------------------------------------------
+query:  hypertrichosis theofanis or williams or zobel motorcyclist
+matches   1 documents (ranked):
+score:   4, docID:   4 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Dartmouth_College.html
+-----------------------------------------------------------------------------------
+query:  imaginary grafton scaled phlebogram or prohibitively or carefully
+matches   2 documents (ranked):
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Hash_table.html
+score:   1, docID:   6 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/C_(programming_language).html
+-----------------------------------------------------------------------------------
+query:  federal or herbert undertaken derelictness went or vermix
+matches   2 documents (ranked):
+score:   1, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Unix.html
+score:   1, docID:   7 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Computer_science.html
+-----------------------------------------------------------------------------------
+query:  philander
+matches   1 documents (ranked):
+score:   2, docID:   4 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Dartmouth_College.html
+-----------------------------------------------------------------------------------
+query:  executives reallocate or personalities constitution orientation
+no matches
+-----------------------------------------------------------------------------------
+query:  incurred
+matches   2 documents (ranked):
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Linked_list.html
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Hash_table.html
+-----------------------------------------------------------------------------------
+query:  museum or gronert mamuneas
+matches   2 documents (ranked):
+score:   5, docID:   4 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Dartmouth_College.html
+score:   1, docID:   7 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Computer_science.html
+-----------------------------------------------------------------------------------
+query:  extra
+matches   2 documents (ranked):
+score:   6, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Linked_list.html
+score:   3, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Hash_table.html
+-----------------------------------------------------------------------------------
+query:  hosted experimentation
+matches   1 documents (ranked):
+score:   1, docID:   7 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Computer_science.html
+-----------------------------------------------------------------------------------
+query:  skip
+matches   3 documents (ranked):
+score:   2, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Linked_list.html
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Hash_table.html
+score:   1, docID:   6 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/C_(programming_language).html
+-----------------------------------------------------------------------------------
+query:  hydroturbine or sensibly deviations or what
+matches   6 documents (ranked):
+score:   9, docID:   4 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Dartmouth_College.html
+score:   9, docID:   7 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Computer_science.html
+score:   3, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Linked_list.html
+score:   3, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Unix.html
+score:   2, docID:   6 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/C_(programming_language).html
+score:   2, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Hash_table.html
+-----------------------------------------------------------------------------------
+query:  palewise
+no matches
+-----------------------------------------------------------------------------------
+query:  length or notable and the and norsk or exsiccator or involve
+matches   5 documents (ranked):
+score:   5, docID:   6 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/C_(programming_language).html
+score:   2, docID:   7 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Computer_science.html
+score:   1, docID:   4 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Dartmouth_College.html
+score:   1, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Unix.html
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Linked_list.html
+-----------------------------------------------------------------------------------
+query:  afire and consing
+no matches
+-----------------------------------------------------------------------------------
+query:  contains notidanian lulu and jewell typesetting
+no matches
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -ne 0 ]; then
+    echo >&2 "Querier failed on wikipedia at depth 1."
+    exit 1
+fi
+
+# fuzz query wikipedia depth 2
+echo "Testing querier on wikipedia at depth 2" 
+Testing querier on wikipedia at depth 2
+./fuzzquery ../tse-index-output/wikipedia-index-2 30 9999  | ./querier ../tse-output/wikipedia-depth-2 ../tse-index-output/wikipedia-index-2 
+./fuzzquery: generating 30 queries from 101541 words
+Loading index...
+query:  professionals olympian and momentum or dossier or assange
+matches   2 documents (ranked):
+score:   2, docID: 897 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Richard_Stallman.html
+score:   1, docID: 847 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Copyright.html
+-----------------------------------------------------------------------------------
+query:  arminians chastin or ucspi and jface
+no matches
+-----------------------------------------------------------------------------------
+query:  unpoliced bnfparser or mellunm or unbailableness
+matches   1 documents (ranked):
+score:   1, docID: 335 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Helsinki.html
+-----------------------------------------------------------------------------------
+query:  interrogator meself
+no matches
+-----------------------------------------------------------------------------------
+query:  jointedness or gasperson spd futile and kahl or kakury
+matches   1 documents (ranked):
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Main_Page.html
+-----------------------------------------------------------------------------------
+query:  posthuman or unconscionable cofferdams
+matches   2 documents (ranked):
+score:  14, docID: 1367 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Transhumanism.html
+score:   1, docID: 1382 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Knowledge.html
+-----------------------------------------------------------------------------------
+query:  discriminately soto hilariously kongyoung
+no matches
+-----------------------------------------------------------------------------------
+query:  deptno or pieper overtakable externalizable
+matches   1 documents (ranked):
+score:   2, docID: 1633 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Distributed_computing.html
+-----------------------------------------------------------------------------------
+query:  copiers technoscience and flatly or nijhoff mooter
+no matches
+-----------------------------------------------------------------------------------
+query:  sphenic setula
+no matches
+-----------------------------------------------------------------------------------
+query:  providential ghotit
+no matches
+-----------------------------------------------------------------------------------
+query:  ordre
+matches   2 documents (ranked):
+score:   4, docID: 453 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Nelson_Rockefeller.html
+score:   1, docID: 315 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/John_Landis.html
+-----------------------------------------------------------------------------------
+query:  eigrp holmesless oblivious idtechex
+no matches
+-----------------------------------------------------------------------------------
+query:  nitc halfwords or integumentary
+matches   1 documents (ranked):
+score:   1, docID: 1665 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Human.html
+-----------------------------------------------------------------------------------
+query:  israel lipidic goccy outdegree
+no matches
+-----------------------------------------------------------------------------------
+query:  cohobator
+no matches
+-----------------------------------------------------------------------------------
+query:  darfur and wstv
+no matches
+-----------------------------------------------------------------------------------
+query:  unregister levow
+no matches
+-----------------------------------------------------------------------------------
+query:  gmp and mallaghan
+no matches
+-----------------------------------------------------------------------------------
+query:  creem palmisano hypervitaminosis anie
+no matches
+-----------------------------------------------------------------------------------
+query:  havre or jamin katrinka or oceana or longlegs and autochangers
+matches   3 documents (ranked):
+score:   1, docID: 427 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Laura_Ingraham.html
+score:   1, docID: 522 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/New_England.html
+score:   1, docID: 524 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Dwight_D.html
+-----------------------------------------------------------------------------------
+query:  muntu or suspicion superstitious or weibel
+matches   2 documents (ranked):
+score:   1, docID: 558 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/John_George_Kemeny.html
+score:   1, docID: 483 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Hazing.html
+-----------------------------------------------------------------------------------
+query:  wilensky or palplus laprie prediatory steamed and probings
+matches   1 documents (ranked):
+score:   1, docID: 1535 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Natural_language_processing.html
+-----------------------------------------------------------------------------------
+query:  misgovernment malcolm
+no matches
+-----------------------------------------------------------------------------------
+query:  kravetz
+matches   1 documents (ranked):
+score:   1, docID: 1466 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Visualization_(computer_graphics).html
+-----------------------------------------------------------------------------------
+query:  unchrisom sphincterismus or litt generates channelle and annoyance
+no matches
+-----------------------------------------------------------------------------------
+query:  tommie or ticketmaster and jimmie
+matches   2 documents (ranked):
+score:   4, docID: 346 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/Gold_Glove.html
+score:   1, docID: 409 : http://cs50tse.cs.dartmouth.edu/tse/wikipedia/MacArthur_Fellows_Program.html
+-----------------------------------------------------------------------------------
+query:  tory and macx artifax and kilocycle gpio and reassessed
+no matches
+-----------------------------------------------------------------------------------
+query:  buzzkill adjective accuracy muddify and rhinocerotine summaries
+no matches
+-----------------------------------------------------------------------------------
+query:  rajai autoheader
+no matches
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -ne 0 ]; then
+    echo >&2 "Querier failed on wikipedia at depth 2."
+    exit 1
+fi
+
+echo "Testing querier on wikipedia at depth 0, 1, 2 Complete"
+Testing querier on wikipedia at depth 0, 1, 2 Complete
+
+echo "======================================================================="
+=======================================================================
+
+# fuzz query toscrape depth 0, 1, 2
+echo "Querier tests on toscrape at depth 0, 1, 2"
+Querier tests on toscrape at depth 0, 1, 2
+
+# fuzz query toscrape depth 0
+echo "Testing querier on toscrape at depth 0" 
+Testing querier on toscrape at depth 0
+./fuzzquery ../tse-index-output/toscrape-index-0 30 10 | ./querier ../tse-output/toscrape-depth-0 ../tse-index-output/toscrape-index-0 
+./fuzzquery: generating 30 queries from 134 words
+Loading index...
+query:  machiavellianism or forpine
+no matches
+-----------------------------------------------------------------------------------
+query:  were and could or mystery fantasy love or light
+matches   1 documents (ranked):
+score:   3, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html
+-----------------------------------------------------------------------------------
+query:  black or romance suspense our shakespeare
+matches   1 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html
+-----------------------------------------------------------------------------------
+query:  assigned sharp stock
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html
+-----------------------------------------------------------------------------------
+query:  hearts
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html
+-----------------------------------------------------------------------------------
+query:  art
+matches   1 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html
+-----------------------------------------------------------------------------------
+query:  psychology or parenting and classics or adult or next or here
+matches   1 documents (ranked):
+score:   7, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html
+-----------------------------------------------------------------------------------
+query:  psychology and write or erotica and encephalophyma or short and paranormal
+matches   1 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html
+-----------------------------------------------------------------------------------
+Error: the word and cannot be last 
+-----------------------------------------------------------------------------------
+query:  underofficer and threshel pycnotic or drink
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html
+-----------------------------------------------------------------------------------
+query:  scott adjunctly omnitenent this or suspense and only
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html
+-----------------------------------------------------------------------------------
+query:  redhearted and technologist periosteoma and init
+no matches
+-----------------------------------------------------------------------------------
+query:  basket cultural
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html
+-----------------------------------------------------------------------------------
+query:  free or write art crosse here
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html
+-----------------------------------------------------------------------------------
+query:  stories or books and travel cowhiding pilgrim
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html
+-----------------------------------------------------------------------------------
+query:  tipping sports romance
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html
+-----------------------------------------------------------------------------------
+query:  iranist or triangular
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html
+-----------------------------------------------------------------------------------
+query:  parenting erotica
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html
+-----------------------------------------------------------------------------------
+query:  for and art
+matches   1 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html
+-----------------------------------------------------------------------------------
+query:  science
+matches   1 documents (ranked):
+score:   3, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html
+-----------------------------------------------------------------------------------
+query:  hexapoda dean slidden
+no matches
+-----------------------------------------------------------------------------------
+query:  hypermiraculous write
+no matches
+-----------------------------------------------------------------------------------
+query:  crime showing soilage and function irrigant and next
+no matches
+-----------------------------------------------------------------------------------
+query:  romance or childrens
+matches   1 documents (ranked):
+score:   2, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html
+-----------------------------------------------------------------------------------
+query:  secrets lachnosterna wankle and sandbox
+no matches
+-----------------------------------------------------------------------------------
+query:  manus and academic write religion odontocetous new
+no matches
+-----------------------------------------------------------------------------------
+query:  horror or immense
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html
+-----------------------------------------------------------------------------------
+query:  purposes and books
+matches   1 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html
+-----------------------------------------------------------------------------------
+query:  results or meaning brief or meaning
+matches   1 documents (ranked):
+score:   3, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html
+-----------------------------------------------------------------------------------
+query:  prejudgment
+no matches
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -ne 0 ]; then
+    echo >&2 "Querier failed on toscrape at depth 0."
+    exit 1
+fi
+
+# fuzz query toscrape depth 1
+echo "Testing querier on toscrape at depth 1" 
+Testing querier on toscrape at depth 1
+./fuzzquery ../tse-index-output/toscrape-index-1 30 100 | ./querier ../tse-output/toscrape-depth-1 ../tse-index-output/toscrape-index-1 
+./fuzzquery: generating 30 queries from 2326 words
+Loading index...
+query:  intradivisional stage and messages
+no matches
+-----------------------------------------------------------------------------------
+query:  hound baboushka
+no matches
+-----------------------------------------------------------------------------------
+query:  man and brilliant
+no matches
+-----------------------------------------------------------------------------------
+query:  barrington and skeered and agriculturist or omnivore or traffic or erotic
+matches   3 documents (ranked):
+score:   2, docID:  21 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/tipping-the-velvet_999/index.html
+score:   1, docID:  16 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/the-dirty-little-secrets-of-getting-your-dream-job_994/index.html
+score:   1, docID:  61 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/nonfiction_13/index.html
+-----------------------------------------------------------------------------------
+query:  shaper and max
+no matches
+-----------------------------------------------------------------------------------
+query:  atopyour europe or flag and right
+matches   1 documents (ranked):
+score:   1, docID:   7 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/our-band-could-be-your-life-scenes-from-the-american-indie-underground-1981-1991_985/index.html
+-----------------------------------------------------------------------------------
+query:  square or max and youth sulphoarsenic
+matches   1 documents (ranked):
+score:   1, docID:  21 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/tipping-the-velvet_999/index.html
+-----------------------------------------------------------------------------------
+query:  window
+matches  73 documents (ranked):
+score:   1, docID:   1 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/index.html
+score:   1, docID:   2 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/page-2.html
+score:   1, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/its-only-the-himalayas_981/index.html
+score:   1, docID:   4 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/libertarianism-for-beginners_982/index.html
+score:   1, docID:   5 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/mesaerion-the-best-science-fiction-stories-1800-1849_983/index.html
+score:   1, docID:   6 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/olio_984/index.html
+score:   1, docID:   7 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/our-band-could-be-your-life-scenes-from-the-american-indie-underground-1981-1991_985/index.html
+score:   1, docID:   8 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/rip-it-up-and-start-again_986/index.html
+score:   1, docID:   9 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/scott-pilgrims-precious-little-life-scott-pilgrim-1_987/index.html
+score:   1, docID:  10 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/set-me-free_988/index.html
+score:   1, docID:  11 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/shakespeares-sonnets_989/index.html
+score:   1, docID:  12 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/starving-hearts-triangular-trade-trilogy-1_990/index.html
+score:   1, docID:  13 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/the-black-maria_991/index.html
+score:   1, docID:  14 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/the-boys-in-the-boat-nine-americans-and-their-epic-quest-for-gold-at-the-1936-berlin-olympics_992/index.html
+score:   1, docID:  15 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/the-coming-woman-a-novel-based-on-the-life-of-the-infamous-feminist-victoria-woodhull_993/index.html
+score:   1, docID:  16 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/the-dirty-little-secrets-of-getting-your-dream-job_994/index.html
+score:   1, docID:  17 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/the-requiem-red_995/index.html
+score:   1, docID:  18 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/sapiens-a-brief-history-of-humankind_996/index.html
+score:   1, docID:  19 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/sharp-objects_997/index.html
+score:   1, docID:  20 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/soumission_998/index.html
+score:   1, docID:  21 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/tipping-the-velvet_999/index.html
+score:   1, docID:  22 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/a-light-in-the-attic_1000/index.html
+score:   1, docID:  23 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/crime_51/index.html
+score:   1, docID:  24 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/erotica_50/index.html
+score:   1, docID:  25 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/cultural_49/index.html
+score:   1, docID:  26 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/politics_48/index.html
+score:   1, docID:  27 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/health_47/index.html
+score:   1, docID:  28 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/novels_46/index.html
+score:   1, docID:  29 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/short-stories_45/index.html
+score:   1, docID:  30 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/suspense_44/index.html
+score:   1, docID:  31 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/christian_43/index.html
+score:   1, docID:  32 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/historical_42/index.html
+score:   1, docID:  33 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/self-help_41/index.html
+score:   1, docID:  34 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/academic_40/index.html
+score:   1, docID:  35 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/spirituality_39/index.html
+score:   1, docID:  36 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/contemporary_38/index.html
+score:   1, docID:  37 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/thriller_37/index.html
+score:   1, docID:  38 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/biography_36/index.html
+score:   1, docID:  39 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/business_35/index.html
+score:   1, docID:  40 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/christian-fiction_34/index.html
+score:   1, docID:  41 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/food-and-drink_33/index.html
+score:   1, docID:  42 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/history_32/index.html
+score:   1, docID:  43 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/horror_31/index.html
+score:   1, docID:  44 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/humor_30/index.html
+score:   1, docID:  45 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/adult-fiction_29/index.html
+score:   1, docID:  46 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/parenting_28/index.html
+score:   1, docID:  47 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/autobiography_27/index.html
+score:   1, docID:  48 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/psychology_26/index.html
+score:   1, docID:  49 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/art_25/index.html
+score:   1, docID:  50 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/paranormal_24/index.html
+score:   1, docID:  51 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/poetry_23/index.html
+score:   1, docID:  52 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/science_22/index.html
+score:   1, docID:  53 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/young-adult_21/index.html
+score:   1, docID:  54 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/new-adult_20/index.html
+score:   1, docID:  55 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/fantasy_19/index.html
+score:   1, docID:  56 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/add-a-comment_18/index.html
+score:   1, docID:  57 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/sports-and-games_17/index.html
+score:   1, docID:  58 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/science-fiction_16/index.html
+score:   1, docID:  59 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/default_15/index.html
+score:   1, docID:  60 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/music_14/index.html
+score:   1, docID:  61 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/nonfiction_13/index.html
+score:   1, docID:  62 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/religion_12/index.html
+score:   1, docID:  63 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/childrens_11/index.html
+score:   1, docID:  64 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/fiction_10/index.html
+score:   1, docID:  65 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/womens-fiction_9/index.html
+score:   1, docID:  66 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/romance_8/index.html
+score:   1, docID:  67 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/philosophy_7/index.html
+score:   1, docID:  68 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/classics_6/index.html
+score:   1, docID:  69 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/sequential-art_5/index.html
+score:   1, docID:  70 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/historical-fiction_4/index.html
+score:   1, docID:  71 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/mystery_3/index.html
+score:   1, docID:  72 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/travel_2/index.html
+score:   1, docID:  73 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books_1/index.html
+-----------------------------------------------------------------------------------
+query:  overwhelming assented or publicly misinformation or tim and suddenly
+matches   1 documents (ranked):
+score:   1, docID:  61 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/nonfiction_13/index.html
+-----------------------------------------------------------------------------------
+query:  example thirteen or sanitarium or tough nummies
+matches   1 documents (ranked):
+score:   1, docID:  43 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/horror_31/index.html
+-----------------------------------------------------------------------------------
+query:  transformed or recipient
+matches   2 documents (ranked):
+score:   2, docID:  13 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/the-black-maria_991/index.html
+score:   2, docID:  14 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/the-boys-in-the-boat-nine-americans-and-their-epic-quest-for-gold-at-the-1936-berlin-olympics_992/index.html
+-----------------------------------------------------------------------------------
+query:  boltonia today
+no matches
+-----------------------------------------------------------------------------------
+query:  unsocial or beyond hipbone or dresser or substrate
+matches   1 documents (ranked):
+score:   1, docID:  21 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/tipping-the-velvet_999/index.html
+-----------------------------------------------------------------------------------
+query:  violent or kite immingle mary
+matches   1 documents (ranked):
+score:   1, docID:  19 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/sharp-objects_997/index.html
+-----------------------------------------------------------------------------------
+query:  rupie or avatar pregnant
+no matches
+-----------------------------------------------------------------------------------
+query:  thirteen and grand
+no matches
+-----------------------------------------------------------------------------------
+query:  see medish or cut constant
+no matches
+-----------------------------------------------------------------------------------
+query:  ridiculous tonight passion cylindricalness connect or bawl
+no matches
+-----------------------------------------------------------------------------------
+query:  par and shades behind
+no matches
+-----------------------------------------------------------------------------------
+query:  sharon and independent agency
+no matches
+-----------------------------------------------------------------------------------
+query:  travelers streetlike or cause scissors soldierwise fact
+no matches
+-----------------------------------------------------------------------------------
+query:  melding barbarian and harmful and use aces fallen
+no matches
+-----------------------------------------------------------------------------------
+query:  did
+matches   2 documents (ranked):
+score:   2, docID:   3 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/its-only-the-himalayas_981/index.html
+score:   1, docID:  15 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/the-coming-woman-a-novel-based-on-the-life-of-the-infamous-feminist-victoria-woodhull_993/index.html
+-----------------------------------------------------------------------------------
+query:  club and mirror onza countries books and homecoming
+no matches
+-----------------------------------------------------------------------------------
+query:  phytobezoar
+no matches
+-----------------------------------------------------------------------------------
+query:  intrude nonreligious sandbox
+no matches
+-----------------------------------------------------------------------------------
+query:  operates and style verseman shining
+no matches
+-----------------------------------------------------------------------------------
+query:  humanistic nonaffection novels or classics and next and fashionable
+no matches
+-----------------------------------------------------------------------------------
+query:  sarothra restaurant
+no matches
+-----------------------------------------------------------------------------------
+query:  menshevik and wood or voyager
+matches   1 documents (ranked):
+score:   1, docID:  70 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/category/books/historical-fiction_4/index.html
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -ne 0 ]; then
+    echo >&2 "Querier failed on toscrape at depth 1."
+    exit 1
+fi
+
+# fuzz query toscrape depth 2
+echo "Testing querier on toscrape at depth 2" 
+Testing querier on toscrape at depth 2
+./fuzzquery ../tse-index-output/toscrape-index-2 30 1000| ./querier ../tse-output/toscrape-depth-2 ../tse-index-output/toscrape-index-2 
+./fuzzquery: generating 30 queries from 13563 words
+Loading index...
+query:  mrs kevel and running snag sing
+no matches
+-----------------------------------------------------------------------------------
+query:  burgherhood affiliation
+no matches
+-----------------------------------------------------------------------------------
+query:  mistress and rouelle or orchestral relishes or offers and hewson
+no matches
+-----------------------------------------------------------------------------------
+query:  unhealably ideological enamber costs or depressive
+matches   1 documents (ranked):
+score:   2, docID: 210 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/an-unquiet-mind-a-memoir-of-moods-and-madness_422/index.html
+-----------------------------------------------------------------------------------
+query:  moroi statesmen or demonic quinarian and semipendent
+no matches
+-----------------------------------------------------------------------------------
+query:  introducee gibe ethical
+no matches
+-----------------------------------------------------------------------------------
+query:  estraordinary or quartersawed concluding effect
+matches   1 documents (ranked):
+score:   1, docID: 367 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/orchestra-of-exiles-the-story-of-bronislaw-huberman-the-israel-philharmonic-and-the-one-thousand-jews-he-saved-from-nazi-horrors_337/index.html
+-----------------------------------------------------------------------------------
+query:  assails and phonism or forgery
+matches   2 documents (ranked):
+score:   2, docID: 536 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/the-last-painting-of-sara-de-vos_259/index.html
+score:   1, docID: 322 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/the-art-forger_930/index.html
+-----------------------------------------------------------------------------------
+query:  unto
+matches   1 documents (ranked):
+score:   1, docID: 397 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/the-book-of-mormon_571/index.html
+-----------------------------------------------------------------------------------
+query:  keyboardist or collinsonia or insecurities outsiders reasy
+matches   1 documents (ranked):
+score:   2, docID: 469 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/take-me-home-tonight-rock-star-romance-3_605/index.html
+-----------------------------------------------------------------------------------
+query:  plath optimism or union archrival and salads
+no matches
+-----------------------------------------------------------------------------------
+query:  egan and angering touted or adf egypt and brandering
+no matches
+-----------------------------------------------------------------------------------
+query:  bccb or rapidly guarding and parcelment
+matches   1 documents (ranked):
+score:   1, docID: 403 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/the-day-the-crayons-came-home-crayons_241/index.html
+-----------------------------------------------------------------------------------
+query:  dystopia
+matches   1 documents (ranked):
+score:   1, docID: 343 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/soft-apocalypse_833/index.html
+-----------------------------------------------------------------------------------
+query:  priestlike
+no matches
+-----------------------------------------------------------------------------------
+query:  true remica and lying lock
+no matches
+-----------------------------------------------------------------------------------
+query:  execrative or because logical fro make
+no matches
+-----------------------------------------------------------------------------------
+query:  carcinoscorpius and unmeasuredly and overdrive
+no matches
+-----------------------------------------------------------------------------------
+query:  meant or hela
+matches  12 documents (ranked):
+score:   5, docID: 315 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/the-immortal-life-of-henrietta-lacks_753/index.html
+score:   3, docID: 110 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/born-for-this-how-to-find-the-work-you-were-meant-to-do_588/index.html
+score:   2, docID:  68 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/unqualified-how-god-uses-broken-people-to-do-big-things_873/index.html
+score:   2, docID: 458 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/will-you-wont-you-want-me_644/index.html
+score:   1, docID:  36 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/the-boys-in-the-boat-nine-americans-and-their-epic-quest-for-gold-at-the-1936-berlin-olympics_992/index.html
+score:   1, docID:  75 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/overload-how-to-unplug-unwind-and-unleash-yourself-from-the-pressure-of-stress_725/index.html
+score:   1, docID:  84 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/chasing-heaven-what-dying-taught-me-about-living_797/index.html
+score:   1, docID: 132 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/my-kitchen-year-136-recipes-that-saved-my-life_646/index.html
+score:   1, docID: 157 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/a-distant-mirror-the-calamitous-14th-century_652/index.html
+score:   1, docID: 307 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/a-brush-of-wings-angels-walking-3_651/index.html
+score:   1, docID: 360 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/soul-reader_926/index.html
+score:   1, docID: 542 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/the-invention-of-wings_448/index.html
+-----------------------------------------------------------------------------------
+query:  sweet and drill
+no matches
+-----------------------------------------------------------------------------------
+query:  firefight
+matches   1 documents (ranked):
+score:   1, docID: 148 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/americas-war-for-the-greater-middle-east-a-military-history_361/index.html
+-----------------------------------------------------------------------------------
+query:  mindall and aoudad sleepy amateurs
+no matches
+-----------------------------------------------------------------------------------
+query:  adapted or tackled
+matches   5 documents (ranked):
+score:   2, docID: 497 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/the-story-of-hong-gildong_84/index.html
+score:   1, docID: 486 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/at-the-existentialist-cafe-freedom-being-and-apricot-cocktails-with-jean-paul-sartre-simone-de-beauvoir-albert-camus-martin-heidegger-edmund-husserl-karl-jaspers-maurice-merleau-ponty-and-others_459/index.html
+score:   1, docID:  16 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/worlds-elsewhere-journeys-around-shakespeares-globe_972/index.html
+score:   1, docID: 247 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/the-origin-of-species_499/index.html
+score:   1, docID: 514 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/codename-baboushka-volume-1-the-conclave-of-death_887/index.html
+-----------------------------------------------------------------------------------
+query:  abandon launch los betaworks or mapping and stereographer
+no matches
+-----------------------------------------------------------------------------------
+query:  amongst or uninerved hom and grownup aside
+matches   1 documents (ranked):
+score:   1, docID: 392 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/reasons-to-stay-alive_959/index.html
+-----------------------------------------------------------------------------------
+query:  philosophical heats obsolete or amherst mousse
+no matches
+-----------------------------------------------------------------------------------
+query:  parents and crows
+no matches
+-----------------------------------------------------------------------------------
+query:  situational or welded purple mural and mauvais
+matches   1 documents (ranked):
+score:   1, docID: 213 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/the-lucifer-effect-understanding-how-good-people-turn-evil_758/index.html
+-----------------------------------------------------------------------------------
+query:  create and bcd or disregard or topical or quickly and monotheistic
+matches   2 documents (ranked):
+score:   1, docID: 232 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/out-of-print-city-lights-spotlight-no-14_536/index.html
+score:   1, docID: 277 : http://cs50tse.cs.dartmouth.edu/tse/toscrape/catalogue/the-hook-up-game-on-1_68/index.html
+-----------------------------------------------------------------------------------
+query:  elder gramophonist or rhythm sun ofter and cromaltite
+no matches
+-----------------------------------------------------------------------------------
+Cleaning up...
+Done.
+if [ $? -ne 0 ]; then
+    echo >&2 "Querier failed on toscrape at depth 2."
+    exit 1
+fi
+
+echo "Testing querier on toscrape at depths 0, 1, 2 Complete."
+Testing querier on toscrape at depths 0, 1, 2 Complete.
+
+
+
+echo "=========================== End of testing.sh ===================="
+=========================== End of testing.sh ====================
+
+exit 0
