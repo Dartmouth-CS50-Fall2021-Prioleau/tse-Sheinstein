@@ -232,12 +232,11 @@ is_satify_query(const char * arr[], int count)
     //check for operator at beginning or end
     if ( isOperator(arr[0]) ){
         printf("Error: the word %s cannot be first \n", arr[0]);
-        //fprintf(stdout, "-----------------------------------------------------------------------------------\n");
         return false;
     }
     if ( isOperator(arr[count-1]) ){
         printf("Error: the word %s cannot be last \n", arr[count-1]);
-        //fprintf(stdout, "-----------------------------------------------------------------------------------\n");
+        
         return false;
     }
 
@@ -246,7 +245,6 @@ is_satify_query(const char * arr[], int count)
     for (int i = 0; i < count -2; i ++){
         if (isOperator(arr[i]) && isOperator(arr[i+1])){
             printf("Error: cannot have two consecutive operators\n");
-            //fprintf(stdout, "-----------------------------------------------------------------------------------\n");
             return false;
         }
     }
