@@ -29,20 +29,31 @@ $(PROG): $(OBJS) $(LLIBS)
 fuzzquery: fuzzquery.o $(LLIBS)
 	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
 
-.PHONY: test valgrind clean
+.PHONY: test qunittest unit valgrind clean
 
 test:
-	bash testing.sh
+	bash -v testing.sh &> testing.out
+
+
+qunittest: querier.c  qunittest.h ../common/pagedir.o ../common/index.o ../common/word.o $L/jhash.o $L/set.o $L/memory.o $L/file.o $L/webpage.o $L/hashtable.o $L/counters.o
+	$(CC) $(CFLAGS) -DUNIT_TEST querier.c  $L/bag.o ../common/pagedir.o ../common/index.o ../common/word.o $L/jhash.o $L/set.o $L/memory.o $L/file.o $L/webpage.o $L/hashtable.o  $L/counters.o -o qunittest
+	./qunittest
+
+# uncommnet here to run valgrind on  querier unittest, qunittest
+#valgrind: qunittest
+#valgrind ./qunittest
 
 valgrind: $(PROG) 
 	valgrind ./$(PROG) 
 
 clean:
-	rm -f *~ *.o *.dSYM
+	rm -rf *~ *.o *.dSYM
 	rm -f querier
 	rm -f stocks
 	rm -f core
 	rm -f fuzzquery 
 	rm -f querier
+	rm -f qunittest
+
 
 

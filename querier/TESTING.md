@@ -44,3 +44,16 @@ Break down:
 As with crawler and Querier, the user has to manually compare  the querier outputs with the indexer's output by counting the expected output manually. The indexer outputs can be found here [ http://cs50tse.cs.dartmouth.edu/tse-output/]
 
 
+
+3. Manual verification of correct performance of program.
+
+#### querier.c Unittesting
+`qnittest` IS DEFINED IN `qunittest.h`. A glassbox of `queirer.c` unittesting is implemented .This way, index.c can run as a program if the unit test is defined. In `querier.c` two  main methods a re defined such that the unit main method runs only when `IFDEF UNITTEST` is defined. Otherwise, the default querier main method runs. To run unittest user should simply run `make qunittest` or `make unit` in the querier directory. To run valgrind on the unittest, uncomment the `valgrind `section for `qunittest`.  The program test guarantees absolute zero memory leaks.Furthermore, the program effectively tests some of the  statics helper methods the methods/ functions that querier.c has to offer. 
+
+##### Running Querier Unittest - *qunittest*
+The following are some importants remarks to runninng unnitest:
+
+1. To run the unittest, simply call `make qunittest` or `make qunit`.  
+3. To rid off all object files, simply run `make clean`.
+
+

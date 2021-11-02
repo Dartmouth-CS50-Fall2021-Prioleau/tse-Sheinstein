@@ -434,7 +434,6 @@ static void itemdelete(void* item)
  {
      if (item != NULL) {
         counters_delete(item); // delete the counterset
-        item = NULL;
      }
  }
 

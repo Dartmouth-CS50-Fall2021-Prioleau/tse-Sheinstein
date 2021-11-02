@@ -22,6 +22,8 @@
 #include "../libcs50/hashtable.h"
 #include "../libcs50/counters.h"
 #include "querier.h"
+#include "qunittest.h" // for unnitesting
+
 
 
 
@@ -74,8 +76,8 @@ static counters_t* counters_product (index_t *idx, const char * arr[], int curPo
 static counters_t* counters_sum (index_t *idx, const char * arr[], int size);
 static void count_matches(void *arg, const int key, int count);
 static void sort_matches(void *arg, const int docID, int myScore);
-static void item_delete(void *item);
 static void copy(void *arg, const int key, const int count);
+static void item_delete(void *item);
 
 /***************************** globa Function Prototypes **************************/
 /* that is, visible outside this file */
@@ -85,7 +87,52 @@ void process_query(index_t *idx, char * directory);
 bool is_satify_query(const char * arr[], int count);
 void run_query(index_t *idx, char * directory, const char* arr[], int size);
 
-// isAlpha
+
+/***************************** unittest helper function prototypes ****************/
+static void itemcount(void* arg, const int key, const int count);
+int test_isOperator0();
+int test_newindex0();
+int test_countersSum0();
+int test_copy();
+int test_counters_merge0();
+int test_counters_product0();
+
+
+// conditional main methods
+#ifdef UNIT_TEST
+
+
+
+////////////////////////////////////////////
+/************************  unnitest main method ********************************/
+int
+main(const int argc, const char *argv[])
+{
+  int failed = 0;
+
+  failed += test_isOperator0();
+  failed += test_newindex0();
+  failed += test_countersSum0();
+  failed += test_copy();
+  failed += test_counters_merge0();
+  failed += test_counters_product0();
+  
+
+  if (failed) {
+    printf("\nFAILED %d test cases", failed);
+    return failed;
+  } else {
+    printf("\nPASSED all test cases\n");
+    return 0;
+  }
+
+}
+
+
+#else
+
+
+
 /***************************** main() ****************************************/
 int
 main(int argc, char *argv[]) 
@@ -129,6 +176,11 @@ main(int argc, char *argv[])
 
     return 0;
 }
+
+#endif // UNIT_TEST
+
+
+
 
 
 /****************************  global  helper  functions implementation **************************/
@@ -447,7 +499,7 @@ copy(void *arg, const int key, const int count)
 
 /*********************************** counters_intersect() *********************/
 /* 
- * Intersects two counters, where ctrs_A is thr running product counters.
+ * Intersects two counters, where ctrs_A is the running product counters.
  *
 */
 static void 
@@ -552,6 +604,7 @@ sort_matches(void *arg, const int docID, int myScore)
 
 
 
+
 /******************************** item_delete() *****************************/
 /* Frees item memory of items in index ie. counterset.
 */
@@ -562,6 +615,7 @@ item_delete(void *item)
         counters_delete(item); // delete the counterset
     }
 }
+
 
 
 
@@ -583,6 +637,298 @@ static char
     char* URL = freadlinep(fp);
     fclose(fp);
     return URL;
+}
+
+
+
+
+/************************ itemcount() ************************/
+/* count the non-null items in the set.
+ * note here we don't care what kind of item is in set.
+ */
+static void itemcount(void* arg, const int key, const int count)
+{
+  int* nitems = arg;
+
+  if (nitems != NULL && key>=0 && count >=0){
+    (*nitems)++;
+    }
+}
+
+
+/*************************************************************************************
+ ******************************** unit testing methods ***************************************
+ ***********************************************************************************/
+
+/* ==================== testing isOperator() =================*/
+/////////////////////////////////////
+// make test if word is "and" or "or" 
+int test_isOperator0(){
+
+     START_TEST_CASE("isOperator0");
+     EXPECT(isOperator("you") == false);
+     EXPECT(isOperator("and") == true);
+     EXPECT(isOperator("AND") == false);
+     EXPECT (isOperator("or") == true);
+     EXPECT(isOperator("OR") == false);
+
+    END_TEST_CASE;
+    return TEST_RESULT;
+
+}
+
+/* ==================== testing index_new () =================*/
+/////////////////////////////////////
+// make test if word is "and" or "or" 
+int test_newindex0()
+{
+    START_TEST_CASE("newindex0");
+    index_t* index0 = index_new(3);
+    EXPECT(index0 != NULL);
+    //EXPECT(index0-> size ==  3);
+    
+    EXPECT(index_find(index0, "Dartmouth") == NULL);
+
+    index_delete(index0, NULL);
+    EXPECT(count_net() == 0);
+
+    END_TEST_CASE;
+    return TEST_RESULT;
+}
+
+
+
+int test_copy()
+{
+
+    START_TEST_CASE("copy0");
+
+    // make a counterset
+    counters_t* counter1 = counters_new();
+    EXPECT(counter1 != NULL);
+    counters_add(counter1, 1);
+    int count = 0;
+    counters_iterate(counter1, &count, itemcount);
+    EXPECT(count ==1);
+
+    // add more keys nto counter1
+    counters_add(counter1, 2);
+    counters_add(counter1, 3);
+    counters_add(counter1, 4);
+    count = 0; 
+    counters_iterate(counter1, &count, itemcount);
+    EXPECT(count == 4);
+
+    /// create new counter1 copy
+    counters_t* counter1_copy = counters_new();
+    EXPECT(counter1_copy != NULL);
+    counters_iterate(counter1,counter1_copy, copy);
+    count = 0;
+    counters_iterate(counter1_copy, &count, itemcount);
+    EXPECT(count == 4)
+
+    // get some keys from counter1_copy, they should be identicasl to counter1
+    EXPECT(counters_get(counter1_copy, 1) == 1);
+    EXPECT(counters_get(counter1_copy, 2) == 1);
+    EXPECT(counters_get(counter1_copy, 3) == 1);
+    EXPECT(counters_get(counter1_copy, 4) == 1);
+    
+    // clean up 
+    counters_delete(counter1);
+    counters_delete(counter1_copy);
+    //EXPECT(count_net() == 0);
+
+    END_TEST_CASE;
+    return TEST_RESULT;
+  
+}
+
+
+
+int test_counters_merge0(){
+
+    START_TEST_CASE("counters_merge0");
+
+
+    // make a counterset A
+    counters_t* counterA = counters_new();
+    EXPECT(counterA != NULL);
+
+    // add some keys to counter A
+    counters_add(counterA, 5);
+    counters_add(counterA, 6);
+
+    // count keys in counter A 
+    int count = 0;
+    counters_iterate(counterA, &count, itemcount);
+    EXPECT(count == 2);
+    
+     // make a counterset B
+    counters_t* counterB = counters_new();
+    EXPECT(counterB != NULL);
+
+    // add some keys to counter B
+    counters_add(counterB, 7);
+    counters_add(counterB, 8);
+
+    // count keys in counter B
+    count = 0;
+    counters_iterate(counterB, &count, itemcount);
+    EXPECT(count == 2);
+
+    // merge counterset B into counterset A
+    counters_merge(counterA, counterB);
+
+    // count keys in counter A fter merging it with B keys
+    count = 0;
+    counters_iterate(counterA, &count, itemcount);
+    EXPECT( count == 4)
+
+    //count B item (should remain unchanged)
+    count = 0;
+    counters_iterate(counterB, &count, itemcount);
+    EXPECT(count == 2);
+    
+    // check that counter A jhas the right keys
+    EXPECT(counters_get(counterA, 5) == 1);
+    EXPECT(counters_get(counterA, 6) == 1);
+    EXPECT(counters_get(counterA, 7) == 1);
+    EXPECT(counters_get(counterA, 8) == 1);
+    
+    // clean up 
+    counters_delete(counterA);
+    counters_delete(counterB);
+
+    END_TEST_CASE;
+    return TEST_RESULT;
+
+}
+
+
+
+
+int test_counters_product0(){
+
+    START_TEST_CASE("counters_product0");
+
+
+    int L_NUMSLOTS = 6; // create index 
+    const char * extracted_words[L_NUMSLOTS]; // allocate memory for query tokens on stack
+    
+    // add string words to array 
+    extracted_words[0] = "page";
+    extracted_words[1] = "and";
+    extracted_words[2] = "playground";
+    extracted_words[3] =  "and";
+    extracted_words[4] = "algorithm";
+
+    EXPECT(strcmp(extracted_words[0],"page") == 0);
+    EXPECT(strcmp(extracted_words[1],"and") == 0);
+    EXPECT(strcmp(extracted_words[2],"playground") == 0);
+    EXPECT(strcmp(extracted_words[3], "and") == 0);
+    EXPECT(strcmp(extracted_words[4],"algorithm") == 0);
+
+    //////////////////////////////////////////
+    index_t* index = index_new(10);
+    EXPECT(index != NULL);
+    
+    
+    // create 3 counters for the words
+    counters_t* pages = counters_new();
+    counters_add(pages, 1);
+
+    counters_t* playground = counters_new();
+    counters_add(playground, 1);
+
+    counters_t* algorithm = counters_new();
+    counters_add(algorithm, 1);
+
+    // insert counters into index
+    index_insert(index, "page", pages);
+    index_insert(index, "playground", playground);
+    index_insert(index, "algorithm", algorithm);
+ 
+    // obtain running sum
+    int pos = 0;
+    counters_t* running_sum = counters_product(index, extracted_words, pos, &pos, 5);
+    EXPECT(running_sum != NULL);
+   
+   // iterate over runnning sum
+    int count = 0;
+    counters_iterate(running_sum, &count, itemcount);
+    EXPECT( count == 1)
+    
+    count_free(running_sum);
+    
+
+    index_delete(index,item_delete);
+    memset(extracted_words, '\0', sizeof(extracted_words));
+    END_TEST_CASE;
+    return TEST_RESULT;
+
+    
+
+}
+
+
+
+
+
+
+
+
+
+int test_countersSum0()
+{
+     
+    START_TEST_CASE("counters_sum0");
+
+    int L_NUMSLOTS = 6; // create index 
+    const char * extracted_words[L_NUMSLOTS]; // allocate memory for query tokens on stack
+    
+    // add string words to array 
+    extracted_words[0] = "page";
+    extracted_words[1] = "or";
+    extracted_words[2] = "playground";
+    extracted_words[3] =  "or";
+    extracted_words[4] = "algorithm";
+
+    EXPECT(strcmp(extracted_words[0],"page") == 0);
+    EXPECT(strcmp(extracted_words[1],"or") == 0);
+    EXPECT(strcmp(extracted_words[2],"playground") == 0);
+    EXPECT(strcmp(extracted_words[3], "or") == 0);
+    EXPECT(strcmp(extracted_words[4],"algorithm") == 0);
+
+    //////////////////////////////////////////
+    index_t* index = index_new(10);
+    EXPECT(index != NULL);
+    
+    
+    // create 3 counters for the words
+    counters_t* pages = counters_new();
+    counters_add(pages, 1);
+
+    counters_t* playground = counters_new();
+    counters_add(playground, 1);
+
+    counters_t* algorithm = counters_new();
+    counters_add(algorithm, 1);
+
+    // insert counters into index
+    index_insert(index, "page", pages);
+    index_insert(index, "playground", playground);
+    index_insert(index, "algorithm", algorithm);
+
+
+    counters_t* running_sum = counters_sum(index, extracted_words, 5);
+    EXPECT(running_sum != NULL);
+
+
+    index_delete(index,item_delete);
+    memset(extracted_words, '\0', sizeof(extracted_words));
+    END_TEST_CASE;
+    return TEST_RESULT;
+
 }
 
 
