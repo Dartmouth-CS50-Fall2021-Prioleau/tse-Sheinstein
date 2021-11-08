@@ -2,7 +2,7 @@
 
 ## Elorm Coch
 
-## Total: 96/100
+## Total: 98/100
 ## (10/10) Delivery
   * (3) Proper git tag `lab6submit`.   
   * (2) git commit history - logical groupings of changes in each commit, and meaningful commit messages.
@@ -50,10 +50,10 @@ In `tse/querier/`,
 ## (30/30) Functionality
   * Passed test cases for valid and invalid cases
 
-## (6/10) Memory leaks, according to valgrind
+## (8/10) Memory leaks, according to valgrind
   * (4) free of *memory errors*. 
   * (2) free of *still reachable* memory blocks. 
-  * (-4) free of *lost memory blocks*.
+  * (-2) free of *lost memory blocks*.
     - leaks memory when no matches are found. 
     - Lines 320 - 323 in `querier.c` returns abruptly if `num_matches = 0` withouth free `result` counters.
     * Command: `./querier ../../data/tse-output/letters-depth-6 ../../data/tse-output/letters-index-6`
